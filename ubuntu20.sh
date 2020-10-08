@@ -10,6 +10,8 @@ apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0C54D189F4BA284D;
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4f4ea0aae5267a6c
 sudo add-apt-repository ppa:ondrej/php -y
 curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
+echo "deb https://apt.sonarr.tv/ubuntu focal main" | sudo tee /etc/apt/sources.list.d/sonarr.list
 apt update
 ##uncomment next lines if you want virtual machine installed
 #apt install -y qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils virt-manager
@@ -272,7 +274,7 @@ chown -R www-data:www-data /var/www/html/mywebsql/
 chmod -R 775 /var/www/html/mywebsql/
 ##house keeping##
 ##verbose grub booting for info##
-sed -i '/quiet splash/d' /etc/default/grub;
+sed -i '/splash quiet/d' /etc/default/grub;
 sed -i '/GRUB_TIMEOUT=10/c GRUB_TIMEOUT=3' /etc/default/grub;
 sed '$ a GRUB_RECORDFAIL_TIMEOUT=0' /etc/default/grub;
 update-grub2
