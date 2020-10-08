@@ -1,14 +1,7 @@
 apt purge cloud-init snapd -y
 rm -Rf /etc/cloud
 usermod -aG sudo media
-##uncomment next lines if you want virtual machine installed
-#apt install -y qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils virt-manager
-#adduser media libvirt
-#adduser media libvirt-qemu
-##Things needed to make it all work together
-apt install -y beep genisoimage libarchive-tools syslinux-utils wget sharutils sudo gnupg ca-certificates curl git dirmngr apt-transport-https unzip zip unrar ffmpeg mono-devel transmission-daemon debconf-utils
 curl -sSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -;
-echo "deb https://deb.nodesource.com/node_14.x focal main" | sudo tee /etc/apt/sources.list.d/nodesource.list;
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
 wget -nv https://downloads.plex.tv/plex-keys/PlexSign.key -O- | apt-key add -;
@@ -16,24 +9,31 @@ echo "deb https://downloads.plex.tv/repo/deb public main" | tee  /etc/apt/source
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0C54D189F4BA284D;
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4f4ea0aae5267a6c
 sudo add-apt-repository ppa:ondrej/php -y
-sudo apt update
+curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+apt update
+##uncomment next lines if you want virtual machine installed
+#apt install -y qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils virt-manager
+#adduser media libvirt
+#adduser media libvirt-qemu
+##Things needed to make it all work together
+apt install -y beep genisoimage libarchive-tools syslinux-utils wget sharutils sudo gnupg ca-certificates curl git dirmngr apt-transport-https unzip zip unrar ffmpeg mono-devel transmission-daemon debconf-utils
 ##Istalling Nginx and PHP for simple webpage also included mysql plugins
 apt install -q -y  nginx php7.4 php7.4-common php7.4-cli php7.4-fpm python3-pip openvpn --allow-unauthenticated;
 apt install -y -q php7.4-mysql php7.4-gd php7.4-json php7.4-curl php7.4-zip php7.4-xml php7.4-mbstring php7.4-pgsql php7.4-bcmath;
 #apt install -y -q mariadb-server ##if you need it
 apt install -y -q python-dev python-lxml libxml2-dev libffi-dev libssl-dev libjpeg-dev libpng-dev uuid-dev python-dbus;
-apt install -q -y sqlite3 htop mediainfo samba cifs-utils smbclient avahi-daemon avahi-discover avahi-utils libnss-mdns mdns-scan;
+apt install -q -y sqlite3 htop mediainfo samba cifs-utils smbclient dos2unix avahi-daemon avahi-discover avahi-utils libnss-mdns mdns-scan;
 systemctl stop transmission-daemon
 ##switch to python3 and pip3 and make them default
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 sudo update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 ##install nodejs and cloudcmd with gritty  for web file and ssh##
-curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt-get install -y nodejs
 sudo -H -E npm config set user 0
 sudo -H -E npm config set unsafe-perm true
 sudo -H -E npm install cloudcmd -g
 sudo -H -E npm install gritty -g
+##Start Cloudcmd Temp for gritty access @ port 8000##
 tmux new-session -d -s "cloudtmp" cloudcmd --terminal --terminal-path `gritty --path` --save
 ##you can now login to cloudcmd @ server ip port:8000
 ##next fix permission on ssh and transmisson for access##
@@ -121,7 +121,7 @@ After=syslog.target network.target
   [Service]
 User=media
 Type=simple
-ExecStart=/opt/Radarr/Radarr 
+ExecStart=mono /opt/Radarr/Radarr.exe 
 TimeoutStopSec=20
 KillMode=process
 Restart=on-failure
@@ -181,21 +181,9 @@ sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/you
 sudo chmod a+rx /usr/local/bin/youtube-dl
 pip install flask 
 git clone https://github.com/d0u9/youtube-dl-webui.git
-cd /opt/youtube-dl-webui.git
+cd /opt/youtube-dl-webui
 chmod 777 setup.py
 python setup.py install
-cat > /lib/systemd/system/ytdl.service <<EOF
-[Unit]
-Description=Youtube-dl Gui
-
-[Service]
-Type=forking
-ExecStart=/usr/bin/tmux new-session -d -s youtubedl 'youtube-dl-webui -c /opt/ytdl.config.json'
-
-[Install]
-WantedBy=default.target
-EOF
-systemctl enable ytdl.service
 cat > /opt/ytdl.config.json <<EOF
 {
     "general": {
@@ -212,6 +200,18 @@ cat > /opt/ytdl.config.json <<EOF
     }
 }
 EOF
+cat > /lib/systemd/system/ytdl.service <<EOF
+[Unit]
+Description=Youtube-dl Gui
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/tmux new-session -d -s youtubedl 'youtube-dl-webui -c /opt/ytdl.config.json'
+
+[Install]
+WantedBy=default.target
+EOF
+systemctl enable ytdl.service
 ##remove sql nasty password block / set to none##
 /etc/init.d/mysql stop
 killall mysqld_safe
@@ -259,8 +259,8 @@ ExecStart=/usr/bin/wsdd --shortlog
 [Install]
 WantedBy=multi-user.target
 " > /etc/systemd/system/wsdd.service
-sudo systemctl start wsdd
 sudo systemctl enable wsdd
+sudo systemctl start wsdd
 ##install browsh for ssh firefox access may have to move .Xautority from media to root##
 wget https://github.com/browsh-org/browsh/releases/download/v1.6.4/browsh_1.6.4_linux_amd64.deb
 sudo apt install -y ./browsh_1.6.4_linux_amd64.deb
