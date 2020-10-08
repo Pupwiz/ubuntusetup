@@ -48,7 +48,7 @@ Internal Links<br>
                     <li><a href="http://<?php echo $server_ip; ?>:32400/web" target="_blank">Plex</a></li>
                     <li><a href="http://<?php echo $server_ip; ?>:8989" target="_blank">Sonarr</a></li>
                     <li><a href="http://<?php echo $server_ip; ?>:7878" target="_blank">Radarr</a></li>
-                    <li><a href="http://<?php echo $server_ip; ?>:9117" target="_blank">Jacket</a></li>
+                    <li><a href="http://<?php echo $server_ip; ?>:9117" target="_blank">Jackett</a></li>
                     <li><a href="http://<?php echo $server_ip; ?>:9091" target="_blank">Transmission</a></li>
                     <li><a href="http://<?php echo $server_ip; ?>:5000" target="_blank">YouTubeDL</a></li>
                     </ul>
@@ -67,7 +67,7 @@ VPN <?php echo $vpnip; ?>
                     <li><a href="http://<?php echo $exip; ?>:32400/web" target="_blank">Plex</a></li>
                     <li><a href="http://<?php echo $exip; ?>:8989" target="_blank">Sonarr</a></li>
                     <li><a href="http://<?php echo $exip; ?>:7878" target="_blank">Radarr</a></li>
-                    <li><a href="http://<?php echo $exip; ?>:9117" target="_blank">Jacket</a></li>
+                    <li><a href="http://<?php echo $exip; ?>:9117" target="_blank">Jackett</a></li>
                     <li><a href="http://<?php echo $exip; ?>/transmission" target="_blank">Transmission</a></li>
                     <li><a href="http://<?php echo $exip; ?>:5000" target="_blank">YouTubeDL</a></li>
                     </ul>
