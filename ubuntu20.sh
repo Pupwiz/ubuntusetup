@@ -1,6 +1,17 @@
 apt purge cloud-init snapd -y
 rm -Rf /etc/cloud
 usermod -aG sudo media
+cat <<EOF >> /etc/sysctl.conf
+net.ipv4.ip_forward=1
+net.core.rmem_default = 1048576
+net.core.rmem_max = 16777216
+net.core.wmem_default = 1048576
+net.core.wmem_max = 16777216
+net.core.optmem_max = 65536
+net.ipv4.tcp_rmem = 4096 1048576 2097152
+net.ipv4.tcp_wmem = 4096 65536 16777216
+EOF
+sysctl -p
 curl -sSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -;
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
@@ -273,10 +284,11 @@ unzip mywebsql-3.7.zip -d /var/www/html
 chown -R www-data:www-data /var/www/html/mywebsql/
 chmod -R 775 /var/www/html/mywebsql/
 ##house keeping##
-##verbose grub booting for info##
+##verbose grub booting for info its a server??##
+sed -i '/GRUB_TIMEOUT_STYLE=hidden/d' /etc/default/grub;
 sed -i '/splash quiet/d' /etc/default/grub;
-sed -i '/GRUB_TIMEOUT=10/c GRUB_TIMEOUT=3' /etc/default/grub;
-sed '$ a GRUB_RECORDFAIL_TIMEOUT=0' /etc/default/grub;
+sed -i '/GRUB_TIMEOUT=0/c GRUB_TIMEOUT=3' /etc/default/grub;
+sed -i '$ a GRUB_RECORDFAIL_TIMEOUT=0' /etc/default/grub;
 update-grub2
 sleep 3
 
