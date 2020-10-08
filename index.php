@@ -6,10 +6,10 @@ echo nl2br($server_ip);
 $exip = file_get_contents('/opt/ipwatch/oldip.txt', true);
 $vpnip = file_get_contents('/var/www/html/vpn', FALSE, NULL, 1, 22);
 /* get disk space free (in bytes) */
-$df = disk_free_space("/drive/1");
+$df = disk_free_space("/");
 $df2 = disk_free_space("/drive/2");
 /* and get disk space total (in bytes)  */
-$dt = disk_total_space("/drive/1");
+$dt = disk_total_space("/");
 $dt2 = disk_total_space("/drive/2");
 /* now we calculate the disk space used (in bytes) */
 $du = $dt - $df;
@@ -51,6 +51,7 @@ Internal Links<br>
                     <li><a href="http://<?php echo $server_ip; ?>:9117" target="_blank">Jackett</a></li>
                     <li><a href="http://<?php echo $server_ip; ?>:9091" target="_blank">Transmission</a></li>
                     <li><a href="http://<?php echo $server_ip; ?>:5000" target="_blank">YouTubeDL</a></li>
+                    <li><a href="http://<?php echo $server_ip; ?>:8000" target="_blank">CloudCmd</a></li>
                     </ul>
             </nav>
         </header>
@@ -119,7 +120,7 @@ by you!!
 </style>
 </style>
 <div class='progress'>
-        <div class='prgtext'><?php echo $dp; ?>% Disk Used On Storage Drive 1  Movies & TV </div>
+        <div class='prgtext'><?php echo $dp; ?>% Disk Used OS Storage Drive</div>
         <div class='prgbar'></div>
         <div class='prginfo'>
                 <span style='float: left;'><?php echo "$du of $dt used"; ?></span>
