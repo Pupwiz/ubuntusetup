@@ -11,7 +11,6 @@ curl -sSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key ad
 echo "deb https://deb.nodesource.com/node_14.x focal main" | sudo tee /etc/apt/sources.list.d/nodesource.list;
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
 wget -nv https://downloads.plex.tv/plex-keys/PlexSign.key -O- | apt-key add -;
 echo "deb https://downloads.plex.tv/repo/deb public main" | tee  /etc/apt/sources.list.d/plexserver.list;
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0C54D189F4BA284D;
