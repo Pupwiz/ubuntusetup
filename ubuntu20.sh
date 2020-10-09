@@ -1,5 +1,4 @@
-apt purge cloud-init snapd -y
-rm -Rf /etc/cloud
+apt purge snapd -y
 usermod -aG sudo media
 cat <<EOF >> /etc/sysctl.conf
 net.ipv4.ip_forward=1
