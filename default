@@ -54,21 +54,12 @@ location /transmission {
         proxy_set_header    Host            $host;
         proxy_set_header    X-Real-IP       $remote_addr;
     }
- location /btsync/ {
-	 rewrite ^/btsync/gui(.*) /btsync$1 last;
-	 proxy_pass		 http://127.0.0.1:8888/gui/;
-	 proxy_redirect	 /gui/ /btsync/;
-	 proxy_buffering	 off;
-	 proxy_set_header Host		 $host;
-	 proxy_set_header X-Real-IP	 $remote_addr;
-}
-
 	# deny access to .htaccess files, if Apache's document root
 	# concurs with nginx's one
 	#
-	#location ~ /\.ht {
-	#	deny all;
-	#}
+	location ~ /\.ht {
+		deny all;
+	}
 }
 
 
