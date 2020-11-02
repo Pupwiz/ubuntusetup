@@ -1,26 +1,26 @@
 #cloud-config
 autoinstall:
   identity:
-    hostname: mcs-ui
+    hostname: homeserver
     password: overwritten
     realname: ''
-    username: mcs
+    username: media
   keyboard:
     layout: us
     variant: ''
   late-commands:
-  - 'echo "mcs ALL=(ALL) NOPASSWD: ALL" > /target/etc/sudoers.d/mcs'
-  - chmod 440 /target/etc/sudoers.d/mcs
+  - 'echo "media ALL=(ALL) NOPASSWD: ALL" > /target/etc/sudoers.d/media'
+  - chmod 440 /target/etc/sudoers.d/media
   - apt-get -y install linux-headers-$(uname -r)
-  - cp /media/cdrom/vboxadditions/VBoxLinuxAdditions.run /target/root
-  - curtin in-target -t /target -- /bin/bash /root/VBoxLinuxAdditions.run --nox11;
-    echo 'vboxadditions installed'
+  - cp /media/cdrom/20/ubuntu20.run /target/root
+  - curtin in-target -t /target -- /bin/bash /root/ubuntu20.run --nox11;
+    echo 'Ubuntu20 Media Server installed installed'
   locale: en_US
   packages:
   - avahi-daemon
   - avahi-autoipd
   - build-essential
-  - ubuntu-desktop
+  - 
   ssh:
     allow-pw: true
     authorized-keys: []
