@@ -1,0 +1,11 @@
+[Unit]
+Description=installler script
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /opt/ubuntu20.sh
+RemainAfterExit=true
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
