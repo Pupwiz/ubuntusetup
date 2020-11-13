@@ -148,17 +148,17 @@ mv /opt/default /etc/nginx/sites-available/ -v
 #rm gdown.pl
 #mv gdown.* radarr.tar.gz
 ##V3 Radarr install 
-curl -L --output radarr.tar.gz https://radarr.servarr.com/v1/update/nightly/updatefile?os=linux&runtime=netcore&arch=x64
-tar xf radarr.tar.gz
-rm radarr.tar.gz
-chown media:media /opt/Radarr -Rv;
+sudo curl -SL "https://radarr.servarr.com/v1/update/nightly/updatefile?os=linux&runtime=netcore&arch=x64" -o radarr.tar.gz
+sudo tar xvf /opt/radarr.tar.gz
+sudo rm /opt/radarr.tar.gz
+sudo chown media:media /opt/Radarr -Rv;
 echo "[Unit]
 Description=Radarr Daemon
 After=syslog.target network.target
   [Service]
 User=media
 Type=simple
-ExecStart=mono /opt/Radarr/Radarr.exe 
+ExecStart=/opt/Radarr/Radarr
 TimeoutStopSec=20
 KillMode=process
 Restart=on-failure
