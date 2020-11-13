@@ -3,6 +3,7 @@
 echo " Removing apparmor cloud-init and snapd"
 apt purge apparmor cloud-init snapd -y
 usermod -aG sudo media
+apt install htop 
 cat <<EOF >> /etc/sysctl.conf
 net.ipv4.ip_forward=1
 net.core.rmem_default = 1048576
@@ -37,7 +38,7 @@ apt install -q -y  nginx php7.4 php7.4-common php7.4-cli php7.4-fpm python3-pip 
 apt install -y -q php7.4-mysql php7.4-gd php7.4-json php7.4-curl php7.4-zip php7.4-xml php7.4-mbstring php7.4-pgsql php7.4-bcmath;
 #apt install -y -q mariadb-server ##if you need it
 apt install -y -q python-dev python-lxml libxml2-dev libffi-dev libssl-dev libjpeg-dev libpng-dev uuid-dev python-dbus;
-apt install -q -y sqlite3 htop mediainfo samba cifs-utils smbclient dos2unix avahi-daemon avahi-discover avahi-utils libnss-mdns mdns-scan;
+apt install -q -y sqlite3 mediainfo samba cifs-utils smbclient dos2unix avahi-daemon avahi-discover avahi-utils libnss-mdns mdns-scan;
 systemctl stop transmission-daemon
 ##switch to python3 and pip3 and make them default
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
@@ -88,9 +89,6 @@ cd /opt
 git clone https://github.com/mdhiggins/sickbeard_mp4_automator.git mp4auto
 git clone https://github.com/begleysm/ipwatch.git
 git clone https://github.com/mrworf/plexupdate.git
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
-echo "deb https://apt.sonarr.tv/ubuntu focal main" | sudo tee /etc/apt/sources.list.d/sonarr.list
-sudo apt update
 ##setup newer sonarr with user media without asking##
 cat > /opt/sonarr.seed <<SON
 sonarr sonarr/owning_user string media
@@ -100,25 +98,7 @@ SON
 sudo debconf-set-selections /opt/sonarr.seed
 apt install sonarr plexmediaserver -y
 rm sonarr.seed
-##use google downloader to get new version of Radarr##
-#wget https://raw.githubusercontent.com/circulosmeos/gdown.pl/master/gdown.pl
-#chmod +x gdown.pl
 echo "[Unit]
-        Description=Cloud Commander
-        [Service]
-        TimeoutStartSec=0
-        Restart=always
-        User=root
-        WorkingDirectory=/home/media
-        ExecStart=/usr/bin/cloudcmd
-        [Install]
-        WantedBy=multi-user.target
-        " > /lib/systemd/system/cloudcmd.service;
-        systemctl enable cloudcmd.service;
-        systemctl start cloudcmd.service;
-        systemctl enable plexmediaserver.service;
-        systemctl start plexmediaserver;
-        echo "[Unit]
         Description=Beep after system start
         DefaultDependencies=no
         After=multi-user.target
@@ -127,8 +107,8 @@ echo "[Unit]
         ExecStart=/usr/bin/beep -f 3000 -l 100 -n -f 3500 -l 100 -r 2
         [Install]
         WantedBy=multi-user.target
-        " > /lib/systemd/system/systemup.service;
-        echo "[Unit]
+  " > /lib/systemd/system/systemup.service;
+echo "[Unit]
         Description=Beep before system shutdown
         DefaultDependencies=no
         Before=exit.target
@@ -137,19 +117,16 @@ echo "[Unit]
         ExecStart=/usr/bin/beep -f 3000 -l 100 -r 2 -n -f 2000 -l 150
         [Install]
         WantedBy=reboot.target halt.target poweroff.target
-        " > /lib/systemd/system/systemdown.service;
-        systemctl enable systemup;
-        systemctl start systemup;
-        systemctl enable systemdown;
-        systemctl start systemdown;
+" > /lib/systemd/system/systemdown.service;
+systemctl enable systemup;
+systemctl start systemup;
+systemctl enable systemdown;
+systemctl start systemdown;
 cd /opt;
 wget https://raw.githubusercontent.com/Pupwiz/server/master/deb/index.php
 wget https://raw.githubusercontent.com/Pupwiz/server/master/deb/default
 wget https://raw.githubusercontent.com/Pupwiz/server/master/deb/unpack.sh
 mv /opt/default /etc/nginx/sites-available/ -v
-#./gdown.pl https://drive.google.com/file/d/1AwnCW__YiQ__qAed9saAsZpCY_Nrn0Fd/view?usp=sharing
-#rm gdown.pl
-#mv gdown.* radarr.tar.gz
 ##V3 Radarr install 
 sudo curl -SL "https://radarr.servarr.com/v1/update/nightly/updatefile?os=linux&runtime=netcore&arch=x64" -o radarr.tar.gz
 sudo tar xvf /opt/radarr.tar.gz
