@@ -36,7 +36,7 @@ apt install -y beep genisoimage libarchive-tools syslinux-utils wget sharutils s
 ##Istalling Nginx and PHP for simple webpage also included mysql plugins
 apt install -q -y  nginx php7.4 php7.4-common php7.4-cli php7.4-fpm python3-pip openvpn --allow-unauthenticated;
 apt install -y -q php7.4-mysql php7.4-gd php7.4-json php7.4-curl php7.4-zip php7.4-xml php7.4-mbstring php7.4-pgsql php7.4-bcmath;
-#apt install -y -q mariadb-server ##if you need it
+apt install -y -q mariadb-server ##if you need it
 apt install -y -q python-dev python-lxml libxml2-dev libffi-dev libssl-dev libjpeg-dev libpng-dev uuid-dev python-dbus;
 apt install -q -y sqlite3 mediainfo samba cifs-utils smbclient dos2unix avahi-daemon avahi-discover avahi-utils libnss-mdns mdns-scan;
 systemctl stop transmission-daemon
