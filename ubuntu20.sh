@@ -140,6 +140,10 @@ echo "[Unit]
         systemctl enable systemdown;
         systemctl start systemdown;
 cd /opt;
+wget https://raw.githubusercontent.com/Pupwiz/server/master/deb/index.php
+wget https://raw.githubusercontent.com/Pupwiz/server/master/deb/default
+wget https://raw.githubusercontent.com/Pupwiz/server/master/deb/unpack.sh
+mv /opt/default /etc/nginx/sites-available/ -v
 #./gdown.pl https://drive.google.com/file/d/1AwnCW__YiQ__qAed9saAsZpCY_Nrn0Fd/view?usp=sharing
 #rm gdown.pl
 #mv gdown.* radarr.tar.gz
@@ -303,6 +307,10 @@ wget https://newcontinuum.dl.sourceforge.net/project/mywebsql/stable/mywebsql-3.
 unzip mywebsql-3.7.zip -d /var/www/html
 chown -R www-data:www-data /var/www/html/mywebsql/
 chmod -R 775 /var/www/html/mywebsql/
+mv /opt/default /etc/nginx/sites-available/ -v
+mv /opt/index.php /var/www/html/ -v
+mv /opt/.htpasswd /etc/nginx/ -v
+mv /opt/unpack.sh /home/media/ -v
 ##house keeping##
 ##verbose grub booting for info its a server??##
 sed -i '/GRUB_TIMEOUT_STYLE=hidden/d' /etc/default/grub;
