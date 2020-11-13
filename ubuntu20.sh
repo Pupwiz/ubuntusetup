@@ -219,38 +219,41 @@ tar -xvzf Jackett.Binaries.LinuxAMDx64.tar.gz
 sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
 sudo chmod a+rx /usr/local/bin/youtube-dl
 pip install flask 
-git clone https://github.com/d0u9/youtube-dl-webui.git
-cd /opt/youtube-dl-webui
-chmod 777 setup.py
-python setup.py install
-cat > /opt/ytdl.config.json <<EOF
-{
-    "general": {
-        "download_dir": "/home/media/youtube",
-        "db_path": "/home/media/youtube_dl_webui.db",
-        "log_size": 10
-    },
-    "youtube_dl": {
-        "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best"
-    },
-    "server": {
-        "host": "0.0.0.0",
-        "port": "5000"
-    }
-}
-EOF
-cat > /lib/systemd/system/ytdl.service <<EOF
-[Unit]
-Description=Youtube-dl Gui
-
-[Service]
-Type=forking
-ExecStart=/usr/bin/tmux new-session -d -s youtubedl 'youtube-dl-webui -c /opt/ytdl.config.json'
-
-[Install]
-WantedBy=default.target
-EOF
-systemctl enable ytdl.service
+pip install apt-select
+## apt-select usage example apt-select --country CA -t 3
+#git clone https://github.com/d0u9/youtube-dl-webui.git
+#cd /opt/youtube-dl-webui
+#chmod 777 setup.py
+#python setup.py install
+#cat > /opt/ytdl.config.json <<EOF
+#{
+#    "general": {
+#        "download_dir": "/home/media/youtube",
+#        "db_path": "/home/media/youtube_dl_webui.db",
+#        "log_size": 10
+#    },
+#    "youtube_dl": {
+#        "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best"
+#    },
+#    "server": {
+#        "host": "0.0.0.0",
+#        "port": "5000"
+#    }
+#}
+#EOF
+#cat > /lib/systemd/system/ytdl.service <<EOF
+#[Unit]
+#Description=Youtube-dl Gui
+#
+#[Service]
+#Type=forking
+#ExecStart=/usr/bin/tmux new-session -d -s youtubedl 'youtube-dl-webui -c /opt/ytdl.config.json'
+#
+#
+#[Install]
+#WantedBy=default.target
+#EOF
+#systemctl enable ytdl.service
 ##remove sql nasty password block / set to none##
 /etc/init.d/mysql stop
 killall mysqld_safe
