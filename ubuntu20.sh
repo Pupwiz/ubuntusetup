@@ -1,3 +1,5 @@
+## run ubuntu20.sh >log 2>errors
+####install auto=true url=https://pupwiz.com/seed/preseed.cfg hostname=homeserver domain=local
 apt purge apparmour cloud-init snapd -y
 usermod -aG sudo media
 cat <<EOF >> /etc/sysctl.conf
