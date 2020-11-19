@@ -3,7 +3,7 @@
 echo " Removing apparmor cloud-init and snapd"
 apt purge apparmor cloud-init snapd -y
 usermod -aG sudo media
-adduser --disabled-login vpn
+adduser --disabled-login --gecos "" vpn
 sudo adduser media vpn
 sudo adduser vpn media
 ## must have's for script to install 
