@@ -84,6 +84,34 @@ sudo chmod -R 775 /var/lib/transmission-daemon/
 sed -i '/"rpc-authentication-required": *true/ s/true/false/' /etc/transmission-daemon/settings.json
 sed -i '/"rpc-host-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
 sed -i '/"rpc-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
+sed -i '/"script-torrent-done-filename": ""/c  "script-torrent-done-filename": "/home/media/unpack.sh",' /etc/transmission-daemon/settings.json
+cat > /home/media/unpack.sh <<EOF
+#!/bin/bash
+######################
+TR_TORRENT_DIR=${TR_TORRENT_DIR:-$1}
+TR_TORRENT_NAME=${TR_TORRENT_NAME:-$2}
+torrentPath=${TR_TORRENT_DIR}/${TR_TORRENT_NAME}
+log_prefix="Transmission-Daemon"
+_log() {
+  logger -t ${log_prefix} "$@"
+}
+_find_rars () {
+  find "${1}" -type -f \( -iname \*.rar  -o -iname \*.part1.rar -o -iname \*.part01.rar \)
+}
+_unrar_torrent () {
+  find "${1}" \( -iname \*.rar -o -iname \*.part1.rar -o -iname \*.part01.rar \)  -execdir unrar e {} "${2}" ";"
+}
+_log "$TR_TORRENT_NAME is finished, processing directory for unpacking"
+if [ -f "${torrentPath}" ];then
+  _log "Single file torrent, nothing to do"
+  exit
+elif [ -n $( _find_rars "${torrentPath}" ) ];then
+  _log "Torrent with rar files, unpacking"
+  _unrar_torrent ${torrentPath} .
+else
+  _log "No rar files found"
+fi
+EOF
 systemctl enable transmission-daemon
 ##switch to python3 and pip3 and make them default
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
