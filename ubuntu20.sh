@@ -195,7 +195,6 @@ systemctl start systemdown;
 cd /opt;
 wget https://raw.githubusercontent.com/Pupwiz/server/master/deb/index.php
 wget https://raw.githubusercontent.com/Pupwiz/server/master/deb/default
-wget https://raw.githubusercontent.com/Pupwiz/server/master/deb/unpack.sh
 mv /opt/default /etc/nginx/sites-available/ -v
 ##V3 Radarr install 
 sudo curl -SL "https://radarr.servarr.com/v1/update/nightly/updatefile?os=linux&runtime=netcore&arch=x64" -o radarr.tar.gz
@@ -366,7 +365,7 @@ chmod -R 775 /var/www/html/mywebsql/
 mv /opt/default /etc/nginx/sites-available/ -v
 mv /opt/index.php /var/www/html/ -v
 mv /opt/.htpasswd /etc/nginx/ -v
-mv /opt/unpack.sh /home/media/ -v
+chmod+x /home/media/unpack.sh 
 ##house keeping##
 ##verbose grub booting for info its a server??##
 sed -i '/GRUB_TIMEOUT_STYLE=hidden/d' /etc/default/grub;
