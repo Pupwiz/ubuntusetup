@@ -373,3 +373,14 @@ sed -i '/splash quiet/d' /etc/default/grub;
 sed -i '/GRUB_TIMEOUT=0/c GRUB_TIMEOUT=3' /etc/default/grub;
 sed -i '$ a GRUB_RECORDFAIL_TIMEOUT=0' /etc/default/grub;
 update-grub2
+cat > /etc/rc.local <<EOF
+#!/bin/sh -e
+mainnet=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
+vpn2=$(ip addr show tun0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+vp1=$(ip addr show $mainnet | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+echo $vpn2 > /home/media/TUNIP | chmod 777 TUNIP
+echo $vp1 > /home/media/LANIP | chmod 777 LANIP
+echo $mainnet > /home/media/IFINFO | chmod 777 IFINFO
+exit 0
+EOF
+
