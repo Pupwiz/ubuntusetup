@@ -6,7 +6,9 @@ usermod -aG sudo media
 adduser --disabled-login vpn
 sudo adduser media vpn
 sudo adduser vpn media
-apt install htop 
+## must have's for script to install 
+apt install -y beep genisoimage libarchive-tools syslinux-utils wget sharutils sudo gnupg ca-certificates curl git dirmngr apt-transport-https htop
+## Edit system for VPN and transmission-daemon transfer rates nags
 cat <<EOF >> /etc/sysctl.conf
 net.ipv4.ip_forward=1
 net.core.rmem_default = 1048576
@@ -30,7 +32,7 @@ sysctl -p
 curl -sSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -;
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-wget -nv https://downloads.plex.tv/plex-keys/PlexSign.key -O- | apt-key add -;
+curl https://downloads.plex.tv/plex-keys/PlexSign.key | sudo apt-key add -
 echo "deb https://downloads.plex.tv/repo/deb public main" | tee  /etc/apt/sources.list.d/plexserver.list;
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0C54D189F4BA284D;
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4f4ea0aae5267a6c
@@ -44,8 +46,7 @@ apt update
 #adduser media libvirt
 #adduser media libvirt-qemu
 ##Things needed to make it all work together
-apt install -y beep genisoimage libarchive-tools syslinux-utils wget sharutils sudo gnupg ca-certificates curl git dirmngr apt-transport-https 
-apt install -y unzip zip unrar ffmpeg mono-devel transmission-daemon debconf-utils openvpn openvpn-systemd-resolved apt-utils iptables
+apt install -y unzip zip unrar ffmpeg mono-devel tmux transmission-daemon debconf-utils openvpn openvpn-systemd-resolved apt-utils iptables
 sudo DEBIAN_FRONTEND=noninteractive apt-get -y install iptables-persistent
 ##Istalling Nginx and PHP for simple webpage also included mysql plugins
 apt install -q -y  nginx php7.4 php7.4-common php7.4-cli php7.4-fpm python3-pip --allow-unauthenticated;
@@ -84,7 +85,7 @@ sudo chmod -R 775 /var/lib/transmission-daemon/
 sed -i '/"rpc-authentication-required": *true/ s/true/false/' /etc/transmission-daemon/settings.json
 sed -i '/"rpc-host-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
 sed -i '/"rpc-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
-sed -i '/"script-torrent-done-filename": ""/c  "script-torrent-done-filename": "/home/media/unpack.sh",' /etc/transmission-daemon/settings.json
+sed -i '/"script-torrent-done-filename": ""/c     "script-torrent-done-filename": "/home/media/unpack.sh",' /etc/transmission-daemon/settings.json
 cat > /home/media/unpack.sh <<EOF
 #!/bin/bash
 ######################
