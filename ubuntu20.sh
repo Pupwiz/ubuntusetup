@@ -3,6 +3,9 @@
 echo " Removing apparmor cloud-init and snapd"
 apt purge apparmor cloud-init snapd -y
 usermod -aG sudo media
+adduser --disabled-login vpn
+sudo adduser media vpn
+sudo adduser vpn media
 apt install htop 
 cat <<EOF >> /etc/sysctl.conf
 net.ipv4.ip_forward=1
@@ -14,6 +17,15 @@ net.core.optmem_max = 65536
 net.ipv4.tcp_rmem = 4096 1048576 2097152
 net.ipv4.tcp_wmem = 4096 65536 16777216
 EOF
+## mods for VPN tunneling 
+cat > /etc/sysctl.d/9999-vpn.conf <<SYS
+net.ipv4.conf.all.rp_filter = 2
+net.ipv4.conf.default.rp_filter = 2
+net.ipv4.conf.enp2s0.rp_filter = 2
+SYS
+cat <<EOT >> /etc/iproute2/rt_tables
+200     vpn
+EOT
 sysctl -p
 curl -sSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -;
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
@@ -32,14 +44,47 @@ apt update
 #adduser media libvirt
 #adduser media libvirt-qemu
 ##Things needed to make it all work together
-apt install -y beep genisoimage libarchive-tools syslinux-utils wget sharutils sudo gnupg ca-certificates curl git dirmngr apt-transport-https unzip zip unrar ffmpeg mono-devel transmission-daemon debconf-utils
+apt install -y beep genisoimage libarchive-tools syslinux-utils wget sharutils sudo gnupg ca-certificates curl git dirmngr apt-transport-https 
+apt install -y unzip zip unrar ffmpeg mono-devel transmission-daemon debconf-utils openvpn openvpn-systemd-resolved apt-utils iptables
+sudo DEBIAN_FRONTEND=noninteractive apt-get -y install iptables-persistent
 ##Istalling Nginx and PHP for simple webpage also included mysql plugins
-apt install -q -y  nginx php7.4 php7.4-common php7.4-cli php7.4-fpm python3-pip openvpn --allow-unauthenticated;
+apt install -q -y  nginx php7.4 php7.4-common php7.4-cli php7.4-fpm python3-pip --allow-unauthenticated;
 apt install -y -q php7.4-mysql php7.4-gd php7.4-json php7.4-curl php7.4-zip php7.4-xml php7.4-mbstring php7.4-pgsql php7.4-bcmath;
 apt install -y -q mariadb-server ##if you need it
 apt install -y -q python-dev python-lxml libxml2-dev libffi-dev libssl-dev libjpeg-dev libpng-dev uuid-dev python-dbus;
 apt install -q -y sqlite3 mediainfo samba cifs-utils smbclient dos2unix avahi-daemon avahi-discover avahi-utils libnss-mdns mdns-scan;
 systemctl stop transmission-daemon
+## Switch Transmission over to VPN user 
+## and setup transmission for split tunnel 
+mv /lib/systemd/system/trasmission-daemon.service /home/media/trasmission-daemon.original
+cat > /lib/systemd/system/transmission-daemon.service <<EOF
+        [Unit]
+        Description=Transmission BitTorrent Daemon
+        #After=network.target
+	## uncomment above an comment out two below if you want to run without vpn
+        After=sys-devices-virtual-net-tun0.device
+        Wants=sys-devices-virtual-net-tun0.device
+        [Service]
+        #User=debian-transmission
+        User=vpn
+        Group=vpn
+        Type=simple
+        ExecStart=/usr/bin/transmission-daemon -f --log-error -g /etc/transmission-daemon
+        ExecStop=/bin/kill -s STOP $MAINPID
+        ExecReload=/bin/kill -s HUP $MAINPID
+        Restart=on-failure
+        RestartSec=10
+        [Install]
+        WantedBy=multi-user.target
+EOF
+sudo chown -R vpn:vpn /etc/transmission-daemon/
+sudo chown -R vpn:vpn /var/lib/transmission-daemon/
+sudo chmod -R 775 /etc/transmission-daemon/
+sudo chmod -R 775 /var/lib/transmission-daemon/
+sed -i '/"rpc-authentication-required": *true/ s/true/false/' /etc/transmission-daemon/settings.json
+sed -i '/"rpc-host-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
+sed -i '/"rpc-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
+systemctl enable transmission-daemon
 ##switch to python3 and pip3 and make them default
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 sudo update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
@@ -77,10 +122,6 @@ pm2 startup
 sed -i '/PermitRootLogin/c PermitRootLogin yes' /etc/ssh/sshd_config ;
 sed -i '/blacklist snd_pcsp/c #blacklist snd_pcsp' /etc/modprobe.d/blacklist.conf ;
 sed -i '/blacklist pcspkr/c #blacklist pcspkr' /etc/modprobe.d/blacklist.conf ;
-sed -i '/"rpc-authentication-required": *true/ s/true/false/' /etc/transmission-daemon/settings.json
-sed -i '/"rpc-host-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
-sed -i '/"rpc-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
-systemctl enable transmission-daemon
 ##restore ubuntu pc speaker for up down beeps##
 modprobe pcspkr
 sed -i '/;cgi.fix_pathinfo=1/c cgi.fix_pathinfo=0' /etc/php/7.4/fpm/php.ini;
@@ -152,6 +193,9 @@ chown media:media /opt/mp4auto -Rv;
 pip install -r /opt/mp4auto/setup/requirements.txt
 cp /opt/mp4auto/setup/autoProcess.ini.sample /opt/mp4auto/config/autoProcess.ini
 sed -i '/temp-extension/c temp-extension = conv' /opt/mp4auto/config/autoProcess.ini
+sed -i '/temp-extension/c temp-extension = conv' /opt/mp4auto/config/autoProcess.ini
+sed -i '/ffmpeg = ffmpeg.exe/c ffmpeg = ffmpeg' /opt/mp4auto/config/autoProcess.ini
+sed -i '/ffmpeg = ffprobe.exe/c ffmpeg = ffprobe' /opt/mp4auto/config/autoProcess.ini
 wget https://nzbget.net/download/nzbget-latest-bin-linux.run
 chmod +x nzbget-latest-bin-linux.run
 ./nzbget-latest-bin-linux.run
