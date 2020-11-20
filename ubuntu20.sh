@@ -50,7 +50,7 @@ apt update
 apt install -y unzip zip unrar ffmpeg mono-devel tmux transmission-daemon debconf-utils openvpn openvpn-systemd-resolved apt-utils iptables
 sudo DEBIAN_FRONTEND=noninteractive apt-get -y install iptables-persistent
 ##Istalling Nginx and PHP for simple webpage also included mysql plugins
-apt install -q -y  nginx php7.4 php7.4-common php7.4-cli php7.4-fpm python3-pip --allow-unauthenticated;
+apt install -q -y  nginx php7.4 php7.4-common php7.4-cli php7.4-fpm python3-pip libminiupnpc-dev miniupnpc --allow-unauthenticated;
 apt install -y -q php7.4-mysql php7.4-gd php7.4-json php7.4-curl php7.4-zip php7.4-xml php7.4-mbstring php7.4-pgsql php7.4-bcmath;
 apt install -y -q mariadb-server ##if you need it
 apt install -y -q python-dev python-lxml libxml2-dev libffi-dev libssl-dev libjpeg-dev libpng-dev uuid-dev python-dbus;
@@ -381,4 +381,6 @@ sed -i '/splash quiet/d' /etc/default/grub;
 sed -i '/GRUB_TIMEOUT=0/c GRUB_TIMEOUT=3' /etc/default/grub;
 sed -i '$ a GRUB_RECORDFAIL_TIMEOUT=0' /etc/default/grub;
 update-grub
+apt update
+apt upgrade -y
 init 6
