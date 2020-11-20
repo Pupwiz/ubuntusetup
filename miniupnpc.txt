@@ -1,0 +1,88 @@
+UPnP port forwarding
+The second obstacle that prevents the connection is a router’s NAT, which hides all devices in the “internal” router network (LAN) 
+from inbound Internet connections.
+
+To route “external” (WAN) connections to the Raspberry Pi we will employ port forwarding on a router. Because manual configuration 
+of port forwarding rules on each router is not a portable solution (besides, routers also use DHCP to assign dynamic IP addresses 
+to LAN devices, so a MAC-based DHCP reservation is additionally needed), we will rely on Universal Plug and Play (UPnP) protocol 
+to dynamically configure proper port forwarding rules.
+
+Most todays routers support both port forwarding and UPnP, so in most cases Raspberry Pi will be able to enable external access automatically.
+
+We’ll rely on miniupnpc UPnP client, which can be installed as miniupnpc package via your OS package manager.
+
+First of all, let’s ensure that our current router supports UPnP:
+
+upnpc -l
+This command should:
+
+enumerate all supported UPnP devices on local network,
+display their internal- and external IP addresses,
+list their current port forwarding rules.
+If router supports UPnP, we can add a port forwarding (for SSH protocol):
+
+upnpc -e 'SSH on Raspberry Pi' -r 22 TCP
+After that, we may verify the result by reissuing upnpc -l, the output should contain something like:
+
+ TCP 22->192.168.0.2:22 
+Compare this IP address with the internal IP address of the device, which can be displayed via:
+
+ip -4 addr show dev eth0
+If you need to access other services on Raspberry Pi (besides SSH), you may also configure additional port forwardings.
+
+After both DNS and port forwarding are configured, it should be possible to establish an SSH connection to the Raspberry Pi from the Internet:
+
+ssh user@your.domain.name
+However, please keep in mind, that most routers are not able to establish “external” connections from the internal network itself, so a separate Internet
+connection is needed to fully test the setup.
+
+Unattended configuration
+Now, when all the subsystems are checked, we are ready to setup unattended configuration.
+
+Create a shell script in editor:
+
+sudo nano /usr/local/bin/redirect.sh
+insert the following content (don’t forget to specify your real DDNS URL there):
+
+#!/bin/bash
+curl -ks https://your-personal-url > /dev/null
+upnpc -e 'SSH on Raspberry Pi' -r 22 TCP > /dev/null
+Then configure Cron to periodically run this script (every 30 minutes):
+
+sudo crontab -e
+add the following line:
+
+*/30 * * * * /usr/local/bin/redirect.sh
+In this way, Raspberry Pi will automatically update both domain IP and port forwarding, so we should be able to access the device from the 
+Internet even after provider / router / IP address change (however, it may take some time before re-configuration happens).
+
+On-demand configuration
+To avoid the delay before re-configuration, we may configure network manager to automatically run our configuration script when Ethernet 
+cable is plugged in.
+
+If you use Debian-based OS (like Raspbian), add post-up option to /etc/network/interfaces file:
+
+auto eth0
+allow-hotplug eth0
+iface eth0 inet dhcp
+post-up '/usr/local/bin/redirect.sh||true'
+On Arch Linux you may use netctl‘s ifplugd for the same purpose — install ifplugd package, create a network profile /etc/netctl/redirection with the following content:
+
+Interface=eth0
+Connection=ethernet
+IP=dhcp
+ExecUpPost='/usr/local/bin/redirect.sh||true'
+…then enable ifplugd service for eth0 interface:
+
+sudo systemctl enable netctl-ifplugd@eth0.service
+sudo systemctl start netctl-ifplugd@eth0.service
+Now the configuration script should be run automatically when Ethernet connection is established.
+
+Security
+Enabling global Internet access to your Raspberry Pi device is definitely convenient. However, you should keep in mind, that such access must be always complemented 
+by adequately hardened security, namely:
+
+Limit root login via SSH.
+Generate a strong SSH key.
+Disable password login via SSH.
+Configure firewall rules.
