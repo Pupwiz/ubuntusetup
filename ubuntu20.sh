@@ -384,4 +384,5 @@ sed -i '$ a GRUB_RECORDFAIL_TIMEOUT=0' /etc/default/grub;
 update-grub
 apt update
 apt upgrade -y
+apt autoremove -y
 init 6
