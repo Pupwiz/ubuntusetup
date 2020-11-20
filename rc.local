@@ -1,7 +1,4 @@
 #!/bin/bash
-touch /home/media/TUNIP
-touch /home/media/LANIP
-touch /home/media/IFINFO
 mainnet=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
 vpn2=$(ip addr show tun0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
 vp1=$(ip addr show $mainnet | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
