@@ -193,6 +193,12 @@ systemctl enable systemup;
 systemctl start systemup;
 systemctl enable systemdown;
 systemctl start systemdown;
+cd /etc
+wget https://github.com/Pupwiz/ubuntusetup/edit/main/rc.local
+chmod +x /etc/rc.local
+touch /home/media/TUNIP
+touch /home/media/LANIP
+touch /home/media/IFINFO
 cd /opt;
 wget https://raw.githubusercontent.com/Pupwiz/server/master/deb/index.php
 wget https://raw.githubusercontent.com/Pupwiz/server/master/deb/default
@@ -374,4 +380,4 @@ sed -i '/splash quiet/d' /etc/default/grub;
 sed -i '/GRUB_TIMEOUT=0/c GRUB_TIMEOUT=3' /etc/default/grub;
 sed -i '$ a GRUB_RECORDFAIL_TIMEOUT=0' /etc/default/grub;
 update-grub
-
+init 6
