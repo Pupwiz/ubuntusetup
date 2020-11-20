@@ -194,7 +194,8 @@ systemctl start systemup;
 systemctl enable systemdown;
 systemctl start systemdown;
 cd /etc
-wget https://github.com/Pupwiz/ubuntusetup/edit/main/rc.local
+rm rc.local
+wget https://raw.githubusercontent.com/Pupwiz/ubuntusetup/main/rc.local
 chmod +x /etc/rc.local
 touch /home/media/TUNIP
 touch /home/media/LANIP
