@@ -127,9 +127,9 @@ sudo -H -E npm install gritty -g
 sudo -H -E npm install fsevents@latest -g -f
 sudo -H -E npm install pm2@latest -g
 ##Start Cloudcmd Temp for gritty access @ port 8000##
-tmux new-session -d -s "cloudtmp" cloudcmd --terminal --terminal-path `gritty --path` --save
-sleep 3
-tmux kill-session -t cloudtmp
+#tmux new-session -d -s "cloudtmp" cloudcmd --terminal --terminal-path `gritty --path` --save
+#sleep 3
+#tmux kill-session -t cloudtmp
 ## Better Youtube DL
 wget https://github.com/Tzahi12345/YoutubeDL-Material/releases/download/v4.1/youtubedl-material-4.1.zip
 unzip youtubedl-material-4.1.zip -d /tmp/
@@ -145,6 +145,7 @@ sudo -u media pm2 save
 sudo -u media pm2 startup
 sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u media --hp /home/media
 pm2 start cloudcmd
+pm2 start gritty
 pm2 save
 pm2 startup
 ##you can now login to cloudcmd @ server ip port:8000
