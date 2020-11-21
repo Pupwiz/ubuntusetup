@@ -110,7 +110,9 @@ upnpc -l | grep desc:
 Then supply it as the -u parameter every time you use upmpc, e.g.:
 
 upnpc -u http://192.168.1.1:80/DeviceDescription.xml -l
-The remaining step is to set up the connection automatically. As my server is configured via DHCP, I can make this happen every time it’s connected to the local network by putting an executable script in /etc/dhcp/dhclient-exit-hooks.d/ (I called mine upnp, but the name doesn’t really matter). I’ve chosen to use upnpc to tell me the local IP address of the server:
+The remaining step is to set up the connection automatically. As my server is configured via DHCP, I can make this happen every time it’s connected to the local network by
+putting an executable script in /etc/dhcp/dhclient-exit-hooks.d/ (I called mine upnp, but the name doesn’t really matter). I’ve chosen to use upnpc to tell me the local IP
+address of the server:
 
 #!/bin/bash
 export LC_ALL=C
@@ -122,4 +124,5 @@ ip=$($upnpc -l | grep "Local LAN ip address" | cut -d: -f2)
 
 $upnpc -d $external TCP >/dev/null 2>&1
 $upnpc -a $ip $port $external TCP >/dev/null 2>&1
-Now, as soon as the server gets a DHCP lease, it will delete any existing port forwarding and forward port 3333 to its SSH server. The really nice thing is that the router doesn’t need to know about the server
+Now, as soon as the server gets a DHCP lease, it will delete any existing port forwarding and forward port 3333 to its SSH server. The really nice thing is that the router
+doesn’t need to know about the server
