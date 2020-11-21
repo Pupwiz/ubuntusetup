@@ -86,3 +86,40 @@ Limit root login via SSH.
 Generate a strong SSH key.
 Disable password login via SSH.
 Configure firewall rules.
+
+Using UPnP IGD for simpler port forwarding
+2013-02-17
+
+If your router or ADSL modem supports the UPnP Internet Gateway Device protocol (and most of them do), you can forward ports to services on your network much more easily and more flexibly than through the admin interface.
+
+I had to buy a new ADSL modem/wireless router this week, as my old one was no longer working properly: instead of the normal slightly disappointing 6Mbps I usually get here in ‘Digital Britain’, it was down to a few hundred kbps, with highly variable performance. I thought it might be the slightly swollen capacitor on the board, so I replaced that, but to no avail. Fortunately, you can now buy decent ADSL modem/wireless routers from the supermarket for not much money, so, whilst it did cost me £44, it was a fairly easy problem to solve. As a fringe benefit, I now have a much faster wireless network in my flat, so it’s not all bad.
+
+My new router has all kinds of complex options on its management interface, but it’s much more limited than its predecessor in one respect: port forwarding. On the old one, I could forward arbitrarily many ports, and I could choose to map an external port to a different internal one—useful for slightly obfuscating SSH access without having to change the configuration of the internal network. On my new router, however, I can only forward ten distinct port ranges, and the external and internal ports must match. At least, that’s all I can do through the clunky and slow management interface. But it supports UPnP, and UPnP does allow mapping an external port to a different internal port.
+
+Enter MiniUPnP, a project that provides a client and a daemon that implement the UPnP Internet Gateway Device specifications. We only need the client, which is available on Ubuntu in the miniupnpc package.
+
+You can then forward a port as simply as:
+
+upnpc -a 192.168.1.2 22 3333 TCP
+This will forward TCP connections from the internet on port 3333 to port 22 on 192.168.1.2. To remove it, use:
+
+upnpc -d 3333 TCP
+That’s a bit slow, though, as it has to discover the router every time. You can speed that up by supplying the root description URL. First, find it:
+
+upnpc -l | grep desc:
+Then supply it as the -u parameter every time you use upmpc, e.g.:
+
+upnpc -u http://192.168.1.1:80/DeviceDescription.xml -l
+The remaining step is to set up the connection automatically. As my server is configured via DHCP, I can make this happen every time it’s connected to the local network by putting an executable script in /etc/dhcp/dhclient-exit-hooks.d/ (I called mine upnp, but the name doesn’t really matter). I’ve chosen to use upnpc to tell me the local IP address of the server:
+
+#!/bin/bash
+export LC_ALL=C
+
+upnpc="upnpc -u http://192.168.1.1:80/DeviceDescription.xml"
+external=3333
+port=22
+ip=$($upnpc -l | grep "Local LAN ip address" | cut -d: -f2)
+
+$upnpc -d $external TCP >/dev/null 2>&1
+$upnpc -a $ip $port $external TCP >/dev/null 2>&1
+Now, as soon as the server gets a DHCP lease, it will delete any existing port forwarding and forward port 3333 to its SSH server. The really nice thing is that the router doesn’t need to know about the server
