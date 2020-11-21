@@ -1,0 +1,8 @@
+For example, if you want to create a symbolic link from the /mnt/my_drive/movies directory to the ~/my_movies directory you would run:
+
+ln -s /mnt/my_drive/movies ~/my_movies
+Overwriting Symlinks
+If you try to create a symbolic link that already exists , the ln command will print an error message.
+
+
+ln -s my_file.txt my_link.txt
