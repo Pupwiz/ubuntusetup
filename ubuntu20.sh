@@ -58,7 +58,7 @@ apt install -q -y sqlite3 mediainfo samba cifs-utils smbclient dos2unix avahi-da
 systemctl stop transmission-daemon
 ## Switch Transmission over to VPN user 
 ## and setup transmission for split tunnel 
-mv /lib/systemd/system/trasmission-daemon.service /home/media/trasmission-daemon.original
+mv /lib/systemd/system/transmission-daemon.service /home/media/transmission-daemon.service.original
 cat > /lib/systemd/system/transmission-daemon.service <<EOF
         [Unit]
         Description=Transmission BitTorrent Daemon
