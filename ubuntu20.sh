@@ -374,7 +374,7 @@ chmod -R 775 /var/www/html/mywebsql/
 mv /opt/default /etc/nginx/sites-available/ -v
 mv /opt/index.php /var/www/html/ -v
 mv /opt/.htpasswd /etc/nginx/ -v
-chmod+x /home/media/unpack.sh 
+chmod +x /home/media/unpack.sh 
 ##house keeping##
 ##verbose grub booting for info its a server??##
 sed -i '/GRUB_TIMEOUT_STYLE=hidden/d' /etc/default/grub;
