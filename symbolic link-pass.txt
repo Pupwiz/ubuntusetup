@@ -6,3 +6,9 @@ If you try to create a symbolic link that already exists , the ln command will p
 
 
 ln -s my_file.txt my_link.txt
+
+This also reads the password from STDIN via openssl, so it doesn't leave traces in shell history.
+printf "${username}:`openssl passwd -apr1`\n" >> .htpasswd
+printf "example:`openssl passwd -apr1`\n" >> .htpasswd
+
+
