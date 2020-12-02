@@ -2,6 +2,8 @@
 ####install auto=true url=https://pupwiz.com/seed/preseed.cfg hostname=homeserver domain=local
 echo " Removing apparmor cloud-init and snapd"
 apt purge apparmor cloud-init snapd -y
+rm /var/cache/apparmor -Rv
+rm /etc/apparmor.d/local -Rv
 sudo usermod -aG sudo media
 apt update
 sudo adduser --disabled-login --gecos "" vpn
