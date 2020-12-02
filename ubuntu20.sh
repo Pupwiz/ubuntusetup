@@ -1,16 +1,16 @@
 ## run ubuntu20.sh >log 2>errors
 ####install auto=true url=https://pupwiz.com/seed/preseed.cfg hostname=homeserver domain=local
-echo " Removing apparmor cloud-init and snapd"
-apt purge apparmor cloud-init snapd -y
-rm /var/cache/apparmor -Rv
-rm /etc/apparmor.d/local -Rv
+sudo apt install -y lsb-release apt-transport-https ca-certificates software-properties-common
+sudo apt purge apparmor cloud-init snapd -y
+rm -Rv /var/cache/apparmor 
+rm -Rv /etc/apparmor.d/local 
 sudo usermod -aG sudo media
-apt update
+sudo apt update
 sudo adduser --disabled-login --gecos "" vpn
 sudo adduser media vpn
 sudo adduser vpn media
 ## must have's for script to install 
-apt install -y beep genisoimage libarchive-tools syslinux-utils wget sharutils sudo gnupg ca-certificates curl git dirmngr apt-transport-https htop
+sudo apt install -y beep genisoimage libarchive-tools syslinux-utils wget sharutils sudo gnupg ca-certificates curl git dirmngr htop
 ## Edit system for VPN and transmission-daemon transfer rates nags
 cat <<EOF >> /etc/sysctl.conf
 net.ipv4.ip_forward=1
@@ -37,13 +37,11 @@ sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CB
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
 curl https://downloads.plex.tv/plex-keys/PlexSign.key | sudo apt-key add -
 echo "deb https://downloads.plex.tv/repo/deb public main" | tee  /etc/apt/sources.list.d/plexserver.list;
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0C54D189F4BA284D;
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4f4ea0aae5267a6c
-sudo add-apt-repository ppa:ondrej/php -y
+echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/php.list
 curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
-echo "deb https://apt.sonarr.tv/ubuntu focal main" | sudo tee /etc/apt/sources.list.d/sonarr.list
-echo "deb https://apt.sonarr.tv/debian buster main" | sudo tee /etc/apt/sources.list.d/sonarr.list
+echo "deb https://apt.sonarr.tv/$(lsb_release -is) $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/sonarr.list
 sudo apt update
 ##uncomment next lines if you want virtual machine installed
 #apt install -y qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils virt-manager
