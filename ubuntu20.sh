@@ -43,7 +43,8 @@ sudo add-apt-repository ppa:ondrej/php -y
 curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
 echo "deb https://apt.sonarr.tv/ubuntu focal main" | sudo tee /etc/apt/sources.list.d/sonarr.list
-apt update
+echo "deb https://apt.sonarr.tv/debian buster main" | sudo tee /etc/apt/sources.list.d/sonarr.list
+sudo apt update
 ##uncomment next lines if you want virtual machine installed
 #apt install -y qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils virt-manager
 #adduser media libvirt
@@ -57,8 +58,8 @@ apt install -y php7.4-mysql php7.4-gd php7.4-json php7.4-curl php7.4-zip php7.4-
 apt install -y mariadb-server ##if you need it
 apt install -y python3-pip  python-dev python-lxml libminiupnpc-dev miniupnpc
 apt install -y libxml2-dev libffi-dev libssl-dev libjpeg-dev libpng-dev uuid-dev python-dbus;
-apt install -y sqlite3 mediainfo cifs-utils smbclient dos2unix avahi-daemon avahi-discover avahi-utils libnss-mdns mdns-scan;
 sudo DEBIAN_FRONTEND=noninteractive apt install -y samba
+sudo apt install -y sqlite3 mediainfo cifs-utils smbclient dos2unix avahi-daemon avahi-discover avahi-utils libnss-mdns mdns-scan
 systemctl stop transmission-daemon
 ## Switch Transmission over to VPN user 
 ## and setup transmission for split tunnel 
