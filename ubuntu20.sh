@@ -388,8 +388,8 @@ sed -i '/GRUB_TIMEOUT_STYLE=hidden/d' /etc/default/grub;
 sed -i '/splash quiet/d' /etc/default/grub;
 sed -i '/GRUB_TIMEOUT=0/c GRUB_TIMEOUT=3' /etc/default/grub;
 sed -i '$ a GRUB_RECORDFAIL_TIMEOUT=0' /etc/default/grub;
-update-grub
+sudo update-grub
 apt update
 apt upgrade -y
 apt autoremove -y
-init 6
+sudo init 6
