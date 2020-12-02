@@ -2,9 +2,9 @@
 ####install auto=true url=https://pupwiz.com/seed/preseed.cfg hostname=homeserver domain=local
 echo " Removing apparmor cloud-init and snapd"
 apt purge apparmor cloud-init snapd -y
-usermod -aG sudo media
+sudo usermod -aG sudo media
 apt update
-adduser --disabled-login --gecos "" vpn
+sudo adduser --disabled-login --gecos "" vpn
 sudo adduser media vpn
 sudo adduser vpn media
 ## must have's for script to install 
@@ -29,7 +29,7 @@ SYS
 cat <<EOT >> /etc/iproute2/rt_tables
 200     vpn
 EOT
-sysctl -p
+sudo sysctl -p
 curl -sSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -;
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
@@ -50,16 +50,18 @@ apt update
 apt install -y unzip zip unrar ffmpeg mono-devel tmux transmission-daemon debconf-utils openvpn openvpn-systemd-resolved apt-utils iptables
 sudo DEBIAN_FRONTEND=noninteractive apt-get -y install iptables-persistent
 ##Istalling Nginx and PHP for simple webpage also included mysql plugins
-apt install -q -y  nginx php7.4 php7.4-common php7.4-cli php7.4-fpm python3-pip libminiupnpc-dev miniupnpc --allow-unauthenticated;
-apt install -y -q php7.4-mysql php7.4-gd php7.4-json php7.4-curl php7.4-zip php7.4-xml php7.4-mbstring php7.4-pgsql php7.4-bcmath;
-apt install -y -q mariadb-server ##if you need it
-apt install -y -q python-dev python-lxml libxml2-dev libffi-dev libssl-dev libjpeg-dev libpng-dev uuid-dev python-dbus;
-apt install -q -y sqlite3 mediainfo samba cifs-utils smbclient dos2unix avahi-daemon avahi-discover avahi-utils libnss-mdns mdns-scan;
+apt install -y nginx php7.4 php7.4-common php7.4-cli php7.4-fpm  --allow-unauthenticated;
+apt install -y php7.4-mysql php7.4-gd php7.4-json php7.4-curl php7.4-zip php7.4-xml php7.4-mbstring php7.4-pgsql php7.4-bcmath;
+apt install -y mariadb-server ##if you need it
+apt install -y python3-pip  python-dev python-lxml libminiupnpc-dev miniupnpc
+apt install -y libxml2-dev libffi-dev libssl-dev libjpeg-dev libpng-dev uuid-dev python-dbus;
+apt install -y sqlite3 mediainfo cifs-utils smbclient dos2unix avahi-daemon avahi-discover avahi-utils libnss-mdns mdns-scan;
+sudo DEBIAN_FRONTEND=noninteractive apt install -y samba
 systemctl stop transmission-daemon
 ## Switch Transmission over to VPN user 
 ## and setup transmission for split tunnel 
 mv /lib/systemd/system/transmission-daemon.service /home/media/transmission-daemon.service.original
-cat > /lib/systemd/system/transmission-daemon.service <<EOF
+cat <<EOF >> /lib/systemd/system/transmission-daemon.service
         [Unit]
         Description=Transmission BitTorrent Daemon
         #After=network.target
@@ -87,7 +89,7 @@ sed -i '/"rpc-authentication-required": *true/ s/true/false/' /etc/transmission-
 sed -i '/"rpc-host-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
 sed -i '/"rpc-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
 sed -i '/"script-torrent-done-filename": ""/c     "script-torrent-done-filename": "/home/media/unpack.sh",' /etc/transmission-daemon/settings.json
-cat > /home/media/unpack.sh <<EOF
+cat <<EOF >> /home/media/unpack.sh
 #!/bin/bash
 ######################
 TR_TORRENT_DIR=${TR_TORRENT_DIR:-$1}
@@ -114,6 +116,8 @@ else
   _log "No rar files found"
 fi
 EOF
+sudo chmod +x unpack.sh
+sudo chown vpn: unpack.sh
 systemctl enable transmission-daemon
 ##switch to python3 and pip3 and make them default
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
