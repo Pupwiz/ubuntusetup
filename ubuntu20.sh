@@ -90,8 +90,8 @@ sudo chmod -R 775 /var/lib/transmission-daemon/
 sed -i '/"rpc-authentication-required": *true/ s/true/false/' /etc/transmission-daemon/settings.json
 sed -i '/"rpc-host-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
 sed -i '/"rpc-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
-sed -i '/"script-torrent-done-filename": ""/c     "script-torrent-done-filename": "/home/media/unpack.sh",' /etc/transmission-daemon/settings.json
-cat <<EOF >> /home/media/unpack.sh
+sed -i '/"script-torrent-done-filename": ""/c     "script-torrent-done-filename": "/home/vpn/unpack.sh",' /etc/transmission-daemon/settings.json
+cat <<EOF >> /home/vpn/unpack.sh
 #!/bin/bash
 ######################
 TR_TORRENT_DIR=${TR_TORRENT_DIR:-$1}
@@ -118,8 +118,8 @@ else
   _log "No rar files found"
 fi
 EOF
-sudo chmod +x unpack.sh
-sudo chown vpn: unpack.sh
+sudo chmod +x /home/vpn/unpack.sh
+sudo chown vpn: /home/vpn/unpack.sh
 systemctl enable transmission-daemon
 ##switch to python3 and pip3 and make them default
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
