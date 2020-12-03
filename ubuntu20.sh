@@ -64,24 +64,24 @@ systemctl stop transmission-daemon
 ## and setup transmission for split tunnel 
 mv /lib/systemd/system/transmission-daemon.service /home/media/transmission-daemon.service.original
 cat <<EOF >> /lib/systemd/system/transmission-daemon.service
-        [Unit]
-        Description=Transmission BitTorrent Daemon
-        #After=network.target
-	## uncomment above an comment out two below if you want to run without vpn
-        After=sys-devices-virtual-net-tun0.device
-        Wants=sys-devices-virtual-net-tun0.device
-        [Service]
-        #User=debian-transmission
-        User=vpn
-        Group=vpn
-        Type=simple
-        ExecStart=/usr/bin/transmission-daemon -f --log-error -g /etc/transmission-daemon
-        ExecStop=/bin/kill -s STOP $MAINPID
-        ExecReload=/bin/kill -s HUP $MAINPID
-        Restart=on-failure
-        RestartSec=10
-        [Install]
-        WantedBy=multi-user.target
+[Unit]
+Description=Transmission BitTorrent Daemon
+#After=network.target
+## uncomment above an comment out two below if you want to run without vpn
+After=sys-devices-virtual-net-tun0.device
+Wants=sys-devices-virtual-net-tun0.device
+[Service]
+#User=debian-transmission
+User=vpn
+Group=vpn
+Type=simple
+ExecStart=/usr/bin/transmission-daemon -f --log-error -g /etc/transmission-daemon
+ExecStop=/bin/kill -s STOP $MAINPID
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=on-failure
+RestartSec=10
+[Install]
+WantedBy=multi-user.target
 EOF
 sudo chown -R vpn:vpn /etc/transmission-daemon/
 sudo chown -R vpn:vpn /var/lib/transmission-daemon/
