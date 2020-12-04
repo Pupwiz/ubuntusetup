@@ -56,7 +56,8 @@ apt install -y nginx php7.4 php7.4-common php7.4-cli php7.4-fpm  --allow-unauthe
 apt install -y php7.4-mysql php7.4-gd php7.4-json php7.4-curl php7.4-zip php7.4-xml php7.4-mbstring php7.4-pgsql php7.4-bcmath;
 apt install -y mariadb-server ##if you need it
 apt install -y python3-pip  python-dev python-lxml libminiupnpc-dev miniupnpc
-apt install -y libxml2-dev libffi-dev libssl-dev libjpeg-dev libpng-dev uuid-dev python-dbus;
+apt install -y build-essential libssl-dev python3-dbus python3-augeas python3-apt ntpdate
+apt install -y libxml2-dev libffi-devlibjpeg-dev libpng-dev uuid-dev python-dbus;
 sudo DEBIAN_FRONTEND=noninteractive apt install -y samba
 sudo apt install -y sqlite3 mediainfo cifs-utils smbclient dos2unix avahi-daemon avahi-discover avahi-utils libnss-mdns mdns-scan
 systemctl stop transmission-daemon
@@ -124,6 +125,12 @@ systemctl enable transmission-daemon
 ##switch to python3 and pip3 and make them default
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 sudo update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+## Install Ajenti control panel complete 
+sudo pip install setuptools pip wheel -U
+sudo pip install ajenti-panel ajenti.plugin.ace ajenti.plugin.augeas ajenti.plugin.auth-users ajenti.plugin.core \
+ajenti.plugin.dashboard ajenti.plugin.datetime ajenti.plugin.filemanager ajenti.plugin.filesystem ajenti.plugin.network \
+ajenti.plugin.notepad ajenti.plugin.packages ajenti.plugin.passwd ajenti.plugin.plugins ajenti.plugin.power ajenti.plugin.services \
+ajenti.plugin.settings ajenti.plugin.terminal
 ##install nodejs and cloudcmd with gritty  for web file and ssh##
 sudo apt-get install -y nodejs
 sudo -H -E npm config set user 0
