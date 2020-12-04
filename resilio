@@ -1,0 +1,14 @@
+echo "deb http://linux-packages.resilio.com/resilio-sync/deb resilio-sync non-free" | sudo tee /etc/apt/sources.list.d/resilio-sync.list
+curl -LO http://linux-packages.resilio.com/resilio-sync/key.asc && sudo apt-key add ./key.asc
+sudo apt install resilio-sync
+## switch to my user 
+systemctl stop resilio-sync
+change /etc/resilio-sync/config.json
+change to false and 0.0.0.0
+edit
+/lib/systemd/system/resilio-sync.service
+User=media
+Group=media
+Environment="SYNC_USER=media"
+Environment="SYNC_GROUP=media"
+
