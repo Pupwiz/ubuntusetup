@@ -5,7 +5,10 @@ sudo apt purge apparmor cloud-init snapd -y
 rm -Rv /var/cache/apparmor 
 rm -Rv /etc/apparmor.d/local 
 sudo usermod -aG sudo media
-sudo apt update
+sudo apt-key adv --fetch-keys http://repos.tinycp.com/debian/conf/gpg.key
+sudo echo "deb http://repos.tinycp.com/debian all main" | sudo tee /etc/apt/sources.list.d/tinycp.list
+sudo apt -y update
+sudo apt updateTINYCP_USER="admin" TINYCP_PASS="password" TINYCP_PORT="8000" apt-get install tinycp
 sudo adduser --disabled-login --gecos "" vpn
 sudo adduser media vpn
 sudo adduser vpn media
@@ -37,13 +40,7 @@ sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CB
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
 curl https://downloads.plex.tv/plex-keys/PlexSign.key | sudo apt-key add -
 echo "deb https://downloads.plex.tv/repo/deb public main" | tee  /etc/apt/sources.list.d/plexserver.list;
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4f4ea0aae5267a6c
-sudo wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
-echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/php.list
-curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
-echo "deb https://apt.sonarr.tv/$(lsb_release -is) $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/sonarr.list
-sudo apt update
+
 ##uncomment next lines if you want virtual machine installed
 #apt install -y qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils virt-manager
 #adduser media libvirt
@@ -87,10 +84,17 @@ EOF
 sudo chown -R vpn:vpn /etc/transmission-daemon/
 sudo chown -R vpn:vpn /var/lib/transmission-daemon/
 sudo chmod -R 775 /etc/transmission-daemon/
+sudo chmod -R 775 /var/lib/transmission-daemon/sudo chown -R vpn:vpn /etc/transmission-daemon/
+sudo chown -R vpn:vpn /var/lib/transmission-daemon/
+sudo chmod -R 775 /etc/transmission-daemon/
 sudo chmod -R 775 /var/lib/transmission-daemon/
 sed -i '/"rpc-authentication-required": *true/ s/true/false/' /etc/transmission-daemon/settings.json
 sed -i '/"rpc-host-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
 sed -i '/"rpc-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
+sed -i '/"rpc-authentication-required": *true/ s/true/false/' /etc/transmission-daemon/settings.json
+sed -i '/"rpc-host-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
+sed -i '/"rpc-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
+sed -i '/"script-torrent-done-enabled": *false/ s/false/true' /etc/transmission-daemon/settings.json
 sed -i '/"script-torrent-done-filename": ""/c     "script-torrent-done-filename": "/home/vpn/unpack.sh",' /etc/transmission-daemon/settings.json
 cat <<EOF >> /home/vpn/unpack.sh
 #!/bin/bash
