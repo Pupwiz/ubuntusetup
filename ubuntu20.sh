@@ -54,7 +54,7 @@ apt install -y php7.4-mysql php7.4-gd php7.4-json php7.4-curl php7.4-zip php7.4-
 apt install -y mariadb-server ##if you need it
 apt install -y python3-pip  python-dev python-lxml libminiupnpc-dev miniupnpc
 apt install -y build-essential libssl-dev python3-dbus python3-augeas python3-apt ntpdate
-apt install -y libxml2-dev libffi-devlibjpeg-dev libpng-dev uuid-dev python-dbus;
+apt install -y libxml2-dev libffi-dev libjpeg-dev libpng-dev uuid-dev python-dbus;
 sudo DEBIAN_FRONTEND=noninteractive apt install -y samba
 sudo apt install -y sqlite3 mediainfo cifs-utils smbclient dos2unix avahi-daemon avahi-discover avahi-utils libnss-mdns mdns-scan
 systemctl stop transmission-daemon
