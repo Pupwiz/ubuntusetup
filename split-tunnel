@@ -1,3 +1,21 @@
+cat > /etc/network/if-up.d/netipvpn <<SYS
+#!/bin/bash
+mainnet=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
+vpn2=$(ip addr show tun0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+vp1=$(ip addr show $mainnet | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+## store info in file for review or use 
+echo $vpn2 > /home/media/IFINFO
+echo $vp1 >> /home/media/IFINFO
+echo $mainnet >> /home/media/IFINFO
+chmod 777 /home/media/IFINFO
+##update nginx with transmission vpn ip route
+sed -i -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$vp1/g" /etc/nginx/sites-available/default
+exit 0
+
+SYS
+
+
+
 sudo apt-get update
 sudo apt-cache policy openvpn
 sudo apt-get update
