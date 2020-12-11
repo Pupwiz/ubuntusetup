@@ -1,0 +1,37 @@
+sudo apt-get update
+sudo apt-cache policy openvpn
+sudo apt-get update
+sudo apt-get install openvpn -y
+sudo nano /etc/openvpn/update-resolv-conf
+edit
+foreign_option_1='dhcp-option DNS 209.222.18.222'
+foreign_option_2='dhcp-option DNS 209.222.18.218'
+foreign_option_3='dhcp-option DNS 8.8.8.8'
+ip route list
+sudo iptables -F
+sudo iptables -A OUTPUT ! -o lo -m owner --uid-owner vpn -j DROP
+sudo apt-get install iptables-persistent -y
+sudo nano /etc/openvpn/iptables.sh
+# edit to suit
+sudo chmod +x /etc/openvpn/iptables.sh
+sudo nano /etc/openvpn/routing.sh
+#edit to suit
+sudo chmod +x /etc/openvpn/routing.sh
+sudo nano /etc/iproute2/rt_tables
+#add to bottom
+200     vpn
+sudo nano /etc/sysctl.d/9999-vpn.conf
+#edit to suit
+net.ipv4.conf.all.rp_filter = 2
+net.ipv4.conf.default.rp_filter = 2
+net.ipv4.conf.eth0.rp_filter = 2
+#reload the changes 
+sudo sysctl --system
+#check vpn 
+sudo service openvpn status
+#check normal route
+curl ipinfo.io
+#check vpn route
+sudo -u vpn -i -- curl ipinfo.io
+#check resolve
+sudo -u vpn -i -- cat /etc/resolv.conf
