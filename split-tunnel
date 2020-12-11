@@ -37,3 +37,99 @@ curl ipinfo.io
 sudo -u vpn -i -- curl ipinfo.io
 #check resolve
 sudo -u vpn -i -- cat /etc/resolv.conf
+
+#up and down scripts to be executed when VPN starts or stops
+#up /etc/openvpn/iptables.sh
+#down /etc/openvpn/update-resolv-conf
+
+-Now it is going to look like THIS instead:
+
+#up and down scripts to be executed when VPN starts or stops
+up /etc/openvpn/iptables.sh
+down /etc/openvpn/update-systemd-resolved
+down-pre
+
+# prevent DNS leakage
+dhcp-option DOMAIN-ROUTE .
+
+4.)TWO changes need to be made to the /etc/openvpn/routing.sh
+
+A.) ifconfig is deprecated is 18.04 so we need to change the reference to ifconfig to   the more modern method, ip address show
+
+-The old part of the routing.sh config USED to look like this:
+
+GATEWAYIP=$(ifconfig $VPNIF | egrep -o '([0-9]{1,3}\.){3}[0-9]{1,3}' | egrep -v '255|(127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})' | tail -n1)
+if [[ `ip rule list | grep -c 0x1` == 0 ]]; then
+ip rule add from all fwmark 0x1 lookup $VPNUSER
+fi
+
+This section of the config should now be changed to THIS:
+
+GATEWAYIP=$(ip address show $VPNIF | egrep -o '([0-9]{1,3}\.){3}[0-9]{1,3}' | egrep -v '255|(127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})' | tail -n1)
+if [[ `ip rule list | grep -c 0x1` == 0 ]]; then
+ip rule add from all fwmark 0x1 lookup $VPNUSER
+fi
+
+**NOTE** If for some reason you prefer ifconfig you can still install this using 
+sudo apt-get install net-tools. However, I would not suggest this as this 
+method was officially deprecated in 2009. 
+
+B.) The method for setting the VPN DNS at the end of the routing.sh script needs to be modified as well to use the new update-system-resolved method
+
+-The section USED to look like this:
+
+# run update-resolv-conf script to set VPN DNS
+/etc/openvpn/update-resolv-conf
+
+-The section will NOW look like THIS:
+
+# run update-resolv-conf script to set VPN DNS
+/etc/openvpn/update-systemd-resolved
+
+5.)In order to set the openvpn.conf to start automatically with the system do the following:
+
+sudo nano /etc/default/openvpn
+
+Remove the "#" comment from the line AUTOSTART
+
+REBOOT
+
+6.)The command for checking if VPN DNS is configured properly will not return what is indicated in the guide. 
+
+-Instead it will always return the following:
+
+# This file is managed by man:systemd-resolved(8). Do not edit.
+#
+# This is a dynamic resolv.conf file for connecting local clients to the
+# internal DNS stub resolver of systemd-resolved. This file lists all
+# configured search domains.
+#
+# Run "systemd-resolve --status" to see details about the uplink DNS servers
+# currently in use.
+#
+# Third party programs must not access this file directly, but only through the
+# symlink at /etc/resolv.conf. To manage man:resolv.conf(5) in a different way,
+# replace this symlink by a static file or a different symlink.
+#
+# See man:systemd-resolved.service(8) for details about the supported modes of
+# operation for /etc/resolv.conf.
+
+nameserver 127.0.0.53
+
+-Ihe command to check VPN DNS should be systemd-resolve --status
+The output of the command will be similar to the following:
+
+Link 4 (tun0)
+      Current Scopes: DNS
+       LLMNR setting: yes
+MulticastDNS setting: no
+      DNSSEC setting: no
+    DNSSEC supported: no
+         DNS Servers: 209.222.18.222
+                      209.222.18.218
+          DNS Domain: ~.
+
+7.) That's it!!! Following the rest of the guide for Ubuntu 16.04 should get you to where you need to be. 
+The changes outlined here have had me up and running with VPN split tunneling on Ubuntu 18.04 reliably (Fingers Crossed). 
+This stuff is really not my forte so if there is some glaring oversight on my part please let me know. 
+I hope this helps someone else out.
