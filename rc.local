@@ -2,7 +2,10 @@
 mainnet=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
 vpn2=$(ip addr show tun0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
 vp1=$(ip addr show $mainnet | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
-echo $vpn2 > /home/media/TUNIP | chmod 777 TUNIP
-echo $vp1 > /home/media/LANIP | chmod 777 LANIP
-echo $mainnet > /home/media/IFINFO | chmod 777 IFINFO
+echo $vpn2 > /home/media/TUNIP
+chmod 777 /home/media/TUNIP
+echo $vp1 > /home/media/LANIP
+chmod 777 /home/media/LANIP
+echo $mainnet > /home/media/IFINFO
+chmod 777 /home/media/IFINFO
 exit 0
