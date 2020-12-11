@@ -1,7 +1,9 @@
 sudo apt-get update
 sudo apt-cache policy openvpn
 sudo apt-get update
-sudo apt-get install openvpn -y
+sudo apt-get install openvpn openvpn-systemd-resolved
+#two options if openvpn-systemd -resolved dosen't work switch and use update-resolv-conf
+
 sudo nano /etc/openvpn/update-resolv-conf
 edit
 foreign_option_1='dhcp-option DNS 209.222.18.222'
