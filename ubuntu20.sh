@@ -223,7 +223,8 @@ echo $vp1 >> /home/media/IFINFO
 echo $mainnet >> /home/media/IFINFO
 chmod 777 /home/media/IFINFO
 ##update nginx with transmission vpn ip route
-sed -i -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$vp1/g" /etc/nginx/sites-available/default
+sed -i -e "/.*:9091/s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$vp1/g" /etc/nginx/sites-available/default
+##sed -i -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$vp1/g" /etc/nginx/sites-available/default
 exit 0
 SYS
 chmod +x /etc/network/if-up.d/netipvpn
