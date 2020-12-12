@@ -36,6 +36,24 @@ cat <<EOT >> /etc/iproute2/rt_tables
 200     vpn
 EOT
 sudo sysctl -p
+#script for dynamip IP and VPN info after boot and writing it to nginx and openvpn scripts
+cat > /etc/network/if-up.d/netipvpn <<SYS
+#!/bin/bash
+mainnet=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
+vpn2=$(ip addr show tun0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+vp1=$(ip addr show $mainnet | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+## store info in file for review or use 
+echo $vpn2 > /home/media/IFINFO
+echo $vp1 >> /home/media/IFINFO
+echo $mainnet >> /home/media/IFINFO
+chmod 777 /home/media/IFINFO
+##update nginx with transmission vpn ip route
+sed -i -e "/.*:9091/s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$vp1/g" /etc/nginx/sites-available/default
+##sed -i -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$vp1/g" /etc/nginx/sites-available/default
+exit 0
+SYS
+chmod +x /etc/network/if-up.d/netipvpn
+touch /home/media/IFINFO
 ## install nodejs v12 - don't go above 12 - problems with youtubedl-material
 curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
@@ -211,24 +229,6 @@ systemctl enable systemup;
 systemctl start systemup;
 systemctl enable systemdown;
 systemctl start systemdown;
-#script for getting IP info and VPN info on boot and udpating it to nginx and openvpn scripts
-cat > /etc/network/if-up.d/netipvpn <<SYS
-#!/bin/bash
-mainnet=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
-vpn2=$(ip addr show tun0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
-vp1=$(ip addr show $mainnet | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
-## store info in file for review or use 
-echo $vpn2 > /home/media/IFINFO
-echo $vp1 >> /home/media/IFINFO
-echo $mainnet >> /home/media/IFINFO
-chmod 777 /home/media/IFINFO
-##update nginx with transmission vpn ip route
-sed -i -e "/.*:9091/s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$vp1/g" /etc/nginx/sites-available/default
-##sed -i -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$vp1/g" /etc/nginx/sites-available/default
-exit 0
-SYS
-chmod +x /etc/network/if-up.d/netipvpn
-touch /home/media/IFINFO
 cd /opt;
 wget https://raw.githubusercontent.com/Pupwiz/server/master/deb/index.php
 wget https://raw.githubusercontent.com/Pupwiz/server/master/deb/default
