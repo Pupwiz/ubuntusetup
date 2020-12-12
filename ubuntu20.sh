@@ -1,20 +1,21 @@
-## run ubuntu20.sh >log 2>errors
-####install auto=true url=https://pupwiz.com/seed/preseed.cfg hostname=homeserver domain=local
+## run ubuntu20.sh >log 2>errors 
+## orginal was for Ubuntu but have switch to stock debian becaus of ubuntu new installer
+## the ISO sets up the main user as media - this script follows that user
+####install auto=true url=https://yoururl.com/seed/preseed.cfg hostname=homeserver domain=local
 sudo apt install -y lsb-release apt-transport-https ca-certificates software-properties-common
+## must have packages for this script to install 
+sudo apt install -y beep genisoimage libarchive-tools syslinux-utils wget sharutils sudo gnupg ca-certificates curl git dirmngr htop
+##I don't use or see a purpose for the below - the server is locked into only being a media server - if your going to modify then add them back in.
 sudo apt purge apparmor cloud-init snapd -y
 rm -Rv /var/cache/apparmor 
 rm -Rv /etc/apparmor.d/local 
 sudo usermod -aG sudo media
-sudo apt-key adv --fetch-keys http://repos.tinycp.com/debian/conf/gpg.key
-sudo echo "deb http://repos.tinycp.com/debian all main" | sudo tee /etc/apt/sources.list.d/tinycp.list
-sudo apt -y update
-sudo apt updateTINYCP_USER="admin" TINYCP_PASS="password" TINYCP_PORT="8000" apt-get install tinycp
+#adding tunnel user - vpn to split tunnel transmission on VPN side for torrent protection
 sudo adduser --disabled-login --gecos "" vpn
+# allowing Media user and VPN to interact 
 sudo adduser media vpn
 sudo adduser vpn media
-## must have's for script to install 
-sudo apt install -y beep genisoimage libarchive-tools syslinux-utils wget sharutils sudo gnupg ca-certificates curl git dirmngr htop
-## Edit system for VPN and transmission-daemon transfer rates nags
+## Edit system for VPN and transmission-daemon transfer rates - transmission complains if these arent't set
 cat <<EOF >> /etc/sysctl.conf
 net.ipv4.ip_forward=1
 net.core.rmem_default = 1048576
@@ -35,12 +36,12 @@ cat <<EOT >> /etc/iproute2/rt_tables
 200     vpn
 EOT
 sudo sysctl -p
-curl -sSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -;
+## install nodejs v12 - don't go above 12 - problems with youtubedl-material
+curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
 curl https://downloads.plex.tv/plex-keys/PlexSign.key | sudo apt-key add -
 echo "deb https://downloads.plex.tv/repo/deb public main" | tee  /etc/apt/sources.list.d/plexserver.list;
-
 ##uncomment next lines if you want virtual machine installed
 #apt install -y qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils virt-manager
 #adduser media libvirt
@@ -59,7 +60,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt install -y samba
 sudo apt install -y sqlite3 mediainfo cifs-utils smbclient dos2unix avahi-daemon avahi-discover avahi-utils libnss-mdns mdns-scan
 systemctl stop transmission-daemon
 ## Switch Transmission over to VPN user 
-## and setup transmission for split tunnel 
+## and setup transmission for split tunnel save the orginal if you want to go back 
 mv /lib/systemd/system/transmission-daemon.service /home/media/transmission-daemon.service.original
 cat <<EOF >> /lib/systemd/system/transmission-daemon.service
 [Unit]
@@ -95,7 +96,8 @@ sed -i '/"rpc-authentication-required": *true/ s/true/false/' /etc/transmission-
 sed -i '/"rpc-host-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
 sed -i '/"rpc-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
 sed -i '/"script-torrent-done-enabled": *false/ s/false/true' /etc/transmission-daemon/settings.json
-sed -i '/"script-torrent-done-filename": ""/c     "script-torrent-done-filename": "/home/vpn/unpack.sh",' /etc/transmission-daemon/settings.json
+sed -i '/"script-torrent-done-filename": ""/c         "script-torrent-done-filename": "/home/vpn/unpack.sh",' /etc/transmission-daemon/settings.json
+## create an auto unrar script for transmission to unpack completed torrents
 cat <<EOF >> /home/vpn/unpack.sh
 #!/bin/bash
 ######################
@@ -129,12 +131,6 @@ systemctl enable transmission-daemon
 ##switch to python3 and pip3 and make them default
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 sudo update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
-## Install Ajenti control panel complete 
-sudo pip install setuptools pip wheel -U
-sudo pip install ajenti-panel ajenti.plugin.ace ajenti.plugin.augeas ajenti.plugin.auth-users ajenti.plugin.core \
-ajenti.plugin.dashboard ajenti.plugin.datetime ajenti.plugin.filemanager ajenti.plugin.filesystem ajenti.plugin.network \
-ajenti.plugin.notepad ajenti.plugin.packages ajenti.plugin.passwd ajenti.plugin.plugins ajenti.plugin.power ajenti.plugin.services \
-ajenti.plugin.settings ajenti.plugin.terminal
 ##install nodejs and cloudcmd with gritty  for web file and ssh##
 sudo apt-get install -y nodejs
 sudo -H -E npm config set user 0
@@ -142,8 +138,10 @@ sudo -H -E npm config set unsafe-perm true
 sudo -H -E npm install cloudcmd -g
 sudo -H -E npm install gritty -g
 sudo -H -E npm install fsevents@latest -g -f
+##using PM2 to control npm programs on startup and reboot
 sudo -H -E npm install pm2@latest -g
 ##Start Cloudcmd Temp for gritty access @ port 8000##
+## commented out next line as I cant get gritty to work inside cloudcmd any longer 
 #tmux new-session -d -s "cloudtmp" cloudcmd --terminal --terminal-path `gritty --path` --save
 #sleep 3
 #tmux kill-session -t cloudtmp
@@ -162,18 +160,19 @@ sudo -u media pm2 save
 sudo -u media pm2 startup
 sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u media --hp /home/media
 pm2 start cloudcmd
-pm2 start gritty
 pm2 save
 pm2 startup
+## not adding gritty to starpm2 start grittytup for security reason, running on install script on default port 
+pm2 start gritty
 ##you can now login to cloudcmd @ server ip port:8000
-##next fix permission on ssh and transmisson for access##
+##fix permission on ssh and transmisson for root acces ** security issue ** set back after setup complete##
 sed -i '/PermitRootLogin/c PermitRootLogin yes' /etc/ssh/sshd_config ;
 sed -i '/blacklist snd_pcsp/c #blacklist snd_pcsp' /etc/modprobe.d/blacklist.conf ;
 sed -i '/blacklist pcspkr/c #blacklist pcspkr' /etc/modprobe.d/blacklist.conf ;
-##restore ubuntu pc speaker for up down beeps##
+##restore ubuntu pc speaker for up down beeps, this is a ubuntu thing not required on debian ##
 modprobe pcspkr
 sed -i '/;cgi.fix_pathinfo=1/c cgi.fix_pathinfo=0' /etc/php/7.4/fpm/php.ini;
-##install the cool accessories that make things work better##
+##install the scripts that make things work better together ##
 cd /opt
 git clone https://github.com/mdhiggins/sickbeard_mp4_automator.git mp4auto
 git clone https://github.com/begleysm/ipwatch.git
@@ -187,6 +186,7 @@ SON
 sudo debconf-set-selections /opt/sonarr.seed
 apt install sonarr plexmediaserver -y
 rm sonarr.seed
+## startup and shutdown sound if headless server is in residence you can hear it complete boot process 
 echo "[Unit]
         Description=Beep after system start
         DefaultDependencies=no
@@ -211,12 +211,22 @@ systemctl enable systemup;
 systemctl start systemup;
 systemctl enable systemdown;
 systemctl start systemdown;
-cd /etc
-rm rc.local
-wget https://raw.githubusercontent.com/Pupwiz/ubuntusetup/main/rc.local
-chmod +x /etc/rc.local
-touch /home/media/TUNIP
-touch /home/media/LANIP
+#script for getting IP info and VPN info on boot and udpating it to nginx and openvpn scripts
+cat > /etc/network/if-up.d/netipvpn <<SYS
+#!/bin/bash
+mainnet=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
+vpn2=$(ip addr show tun0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+vp1=$(ip addr show $mainnet | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+## store info in file for review or use 
+echo $vpn2 > /home/media/IFINFO
+echo $vp1 >> /home/media/IFINFO
+echo $mainnet >> /home/media/IFINFO
+chmod 777 /home/media/IFINFO
+##update nginx with transmission vpn ip route
+sed -i -e "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$vp1/g" /etc/nginx/sites-available/default
+exit 0
+SYS
+chmod +x /etc/network/if-up.d/netipvpn
 touch /home/media/IFINFO
 cd /opt;
 wget https://raw.githubusercontent.com/Pupwiz/server/master/deb/index.php
