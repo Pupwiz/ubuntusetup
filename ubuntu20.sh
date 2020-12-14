@@ -61,6 +61,8 @@ curl https://downloads.plex.tv/plex-keys/PlexSign.key | sudo apt-key add -
 echo "deb https://downloads.plex.tv/repo/deb public main" | tee  /etc/apt/sources.list.d/plexserver.list;
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
 echo "deb https://apt.sonarr.tv/debian buster main" | sudo tee /etc/apt/sources.list.d/sonarr.list
+sudo wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/php.list
 apt update
 ##uncomment next lines if you want virtual machine installed
 #apt install -y qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils virt-manager
