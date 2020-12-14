@@ -37,11 +37,11 @@ cat <<EOT >> /etc/iproute2/rt_tables
 EOT
 sudo sysctl -p
 #script for dynamip IP and VPN info after boot and writing it to nginx and openvpn scripts
-cat > /etc/network/if-up.d/netipvpn <<SYS
+cat << 'SYS' >/etc/network/if-up.d/netipvpn
 #!/bin/bash
 mainnet=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
 vpn2=$(ip addr show tun0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
-vp1=$(ip addr show $mainnet | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+vpn1=$(ip addr show $mainnet | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
 ## store info in file for review or use 
 echo $vpn2 > /home/media/IFINFO
 echo $vp1 >> /home/media/IFINFO
@@ -54,11 +54,12 @@ SYS
 chmod +x /etc/network/if-up.d/netipvpn
 touch /home/media/IFINFO
 ## install nodejs v12 - don't go above 12 - problems with youtubedl-material
-curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_15.x | sudo -E bash -
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
 curl https://downloads.plex.tv/plex-keys/PlexSign.key | sudo apt-key add -
 echo "deb https://downloads.plex.tv/repo/deb public main" | tee  /etc/apt/sources.list.d/plexserver.list;
+apt update
 ##uncomment next lines if you want virtual machine installed
 #apt install -y qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils virt-manager
 #adduser media libvirt
@@ -79,7 +80,7 @@ systemctl stop transmission-daemon
 ## Switch Transmission over to VPN user 
 ## and setup transmission for split tunnel save the orginal if you want to go back 
 mv /lib/systemd/system/transmission-daemon.service /home/media/transmission-daemon.service.original
-cat <<EOF >> /lib/systemd/system/transmission-daemon.service
+cat <<'EOF'>/lib/systemd/system/transmission-daemon.service
 [Unit]
 Description=Transmission BitTorrent Daemon
 #After=network.target
@@ -115,7 +116,7 @@ sed -i '/"rpc-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemo
 sed -i '/"script-torrent-done-enabled": *false/ s/false/true' /etc/transmission-daemon/settings.json
 sed -i '/"script-torrent-done-filename": ""/c         "script-torrent-done-filename": "/home/vpn/unpack.sh",' /etc/transmission-daemon/settings.json
 ## create an auto unrar script for transmission to unpack completed torrents
-cat <<EOF >> /home/vpn/unpack.sh
+cat <<'EOF' >/home/vpn/unpack.sh
 #!/bin/bash
 ######################
 TR_TORRENT_DIR=${TR_TORRENT_DIR:-$1}
