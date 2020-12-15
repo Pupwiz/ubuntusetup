@@ -2,7 +2,7 @@
 ## orginal was for Ubuntu but have switch to stock debian becaus of ubuntu new installer
 ## the ISO sets up the main user as media - this script follows that user
 ####install auto=true url=https://yoururl.com/seed/preseed.cfg hostname=homeserver domain=local
-sudo apt install -y lsb-release apt-transport-https ca-certificates software-properties-common
+sudo apt install -y lsb-release apt-transport-https ca-certificates software-properties-common dnsutils
 ## must have packages for this script to install 
 sudo apt install -y beep genisoimage libarchive-tools syslinux-utils wget sharutils sudo gnupg ca-certificates curl git dirmngr htop
 ##I don't use or see a purpose for the below - the server is locked into only being a media server - if your going to modify then add them back in.
@@ -39,11 +39,12 @@ sudo sysctl -p
 #script for dynamip IP and VPN info after boot and writing it to nginx and openvpn scripts
 cat << 'SYS' >/etc/network/if-up.d/netipvpn
 #!/bin/bash
+dig TXT +short o-o.myaddr.l.google.com @ns1.google.com | awk -F'"' '{ print $2}' > /home/media/IFINFO
 mainnet=$(ip route get 8.8.8.8 | awk -- '{printf $5}')
 vpn2=$(ip addr show tun0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
 vpn1=$(ip addr show $mainnet | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
 ## store info in file for review or use 
-echo $vpn2 > /home/media/IFINFO
+echo $vpn2 >> /home/media/IFINFO
 echo $vp1 >> /home/media/IFINFO
 echo $mainnet >> /home/media/IFINFO
 chmod 777 /home/media/IFINFO
