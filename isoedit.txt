@@ -1,0 +1,20 @@
+##need apt install genisoimage bsdtar syslinux-utils 
+mktemp -d
+/tmp/tmp.8t03ifDFAx ##example
+##can download iso or use your own 
+wget https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-10.0.0-amd64-netinst.iso
+tdir=$(mktemp -d /tmp/iso.XXXXXXXXX)
+cat debian-10.0.0-amd64-netinst.iso | bsdtar -C "$tdir" -xf -
+chmod +w -R $tdir/install.amd/
+gunzip $tdir/install.amd/initrd.gz
+echo preseed.cfg | cpio -H newc -o -A -F $tdir/install.amd/initrd
+gzip $tdir/install.amd/initrd
+chmod -w -R $tdir/install.amd
+cd $tdir
+md5sum `find -follow -type f` > md5sum.txt
+cd ..
+genisoimage -r -J -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ubuntu.iso $tdir
+##usb bootable
+mkisofs -o ubuntu_20.04.iso -ldots -allow-multidot -d -r -l -J -no-emul-boot -boot-load-size 4 -boot-info-table -b isolinux/isolinux.bin -c isolinux/boot.cat $tdir
+
+isohybrid debian10media.iso
