@@ -1,5 +1,5 @@
 ## run ubuntu20.sh >log 2>errors 
-## orginal was for Ubuntu but have switch to stock debian becaus of ubuntu new installer
+## orginal was for Ubuntu but have switch to stock debian because of ubuntu new installer
 ## the ISO sets up the main user as media - this script follows that user
 ####install auto=true url=https://yoururl.com/seed/preseed.cfg hostname=homeserver domain=local
 sudo apt install -y lsb-release apt-transport-https dnsutils ca-certificates software-properties-common dnsutils
@@ -80,7 +80,7 @@ apt install -y python3-pip  python-dev python-lxml libminiupnpc-dev miniupnpc
 apt install -y build-essential libssl-dev python3-dbus python3-augeas python3-apt ntpdate
 apt install -y libxml2-dev libffi-dev libjpeg-dev libpng-dev uuid-dev python-dbus;
 sudo DEBIAN_FRONTEND=noninteractive apt install -y samba
-sudo apt install -y sqlite3 mediainfo cifs-utils smbclient dos2unix avahi-daemon avahi-discover avahi-utils libnss-mdns mdns-scan
+sudo apt install -y sqlite3 fail2ban mediainfo cifs-utils smbclient dos2unix avahi-daemon avahi-discover avahi-utils libnss-mdns mdns-scan
 systemctl stop transmission-daemon
 ## Switch Transmission over to VPN user 
 ## and setup transmission for split tunnel save the orginal if you want to go back 
