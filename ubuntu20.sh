@@ -108,13 +108,7 @@ EOF
 sudo chown -R vpn:vpn /etc/transmission-daemon/
 sudo chown -R vpn:vpn /var/lib/transmission-daemon/
 sudo chmod -R 775 /etc/transmission-daemon/
-sudo chmod -R 775 /var/lib/transmission-daemon/sudo chown -R vpn:vpn /etc/transmission-daemon/
-sudo chown -R vpn:vpn /var/lib/transmission-daemon/
-sudo chmod -R 775 /etc/transmission-daemon/
 sudo chmod -R 775 /var/lib/transmission-daemon/
-sed -i '/"rpc-authentication-required": *true/ s/true/false/' /etc/transmission-daemon/settings.json
-sed -i '/"rpc-host-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
-sed -i '/"rpc-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
 sed -i '/"rpc-authentication-required": *true/ s/true/false/' /etc/transmission-daemon/settings.json
 sed -i '/"rpc-host-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
 sed -i '/"rpc-whitelist-enabled": *true/ s/true/false/'  /etc/transmission-daemon/settings.json
