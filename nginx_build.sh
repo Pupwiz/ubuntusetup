@@ -1,6 +1,8 @@
 #!/usr/bin/bash
-# Required yum install
-# Vars
+# Build NGINX to suit server code
+# need older module / new modules applied
+# need packages below for build Debian
+
 apt-get install libpcre3 libpcre3-dev
 
 export BUILD_DIR=/tmp/nginx-build
