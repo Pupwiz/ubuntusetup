@@ -44,6 +44,10 @@ echo "=> OpenSSL"
 wget https://www.openssl.org/source/openssl-1.1.1i.tar.gz
 tar -xvf openssl-1.1.1i.tar.gz
 rm -fv openssl-1.1.1i.tar.gz
+git clone https://github.com/eustas/ngx_brotli
+			cd ngx_brotli 
+			git checkout v1.0.9
+			git submodule update --init
 
 echo "2) Configure"
 cd $BUILD_DIR/nginx-src
