@@ -1,0 +1,10 @@
+[Unit]
+        Description=Cloud Commander
+        [Service]
+        TimeoutStartSec=0
+        Restart=always
+        User=root
+        WorkingDirectory=/home/media
+        ExecStart=/usr/bin/cloudcmd
+        [Install]
+        WantedBy=multi-user.target
