@@ -1,4 +1,4 @@
 remove n option after testing
-rsync -razn --progress -e ssh media@192.168.1.121:/drive/10tbsg1/ChristmasMovie/ /drive/movie --delete
-rsync -razn --progress -e ssh media@192.168.1.121:/drive/10tbsg1/ChristmasMusic/ /drive/music
-rsync -razn --progress -e ssh media@192.168.1.121:/drive/cloud/christmasvideo /drive/movie
+rsync -razn --progress -e ssh media@192.168.1.121:/drive/ /drive/movie --delete
+rsync -razn --progress -e ssh media@192.168.1.121:/drive/ /drive/music
+rsync -razn --progress -e ssh media@192.168.1.121:/drive/ /drive/movie
