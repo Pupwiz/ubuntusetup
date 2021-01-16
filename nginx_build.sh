@@ -44,10 +44,15 @@ echo "=> OpenSSL"
 wget https://www.openssl.org/source/openssl-1.1.1i.tar.gz
 tar -xvf openssl-1.1.1i.tar.gz
 rm -fv openssl-1.1.1i.tar.gz
+
 git clone https://github.com/eustas/ngx_brotli
 			cd ngx_brotli 
 			git checkout v1.0.9
-			git submodule update --init
+			git submodule update --ini
+cd $BUILD_DIR
+git clone https://github.com/FRiCKLE/ngx_cache_purge.git ngx_cache
+git clone https://github.com/leev/ngx_http_geoip2_module.git ngx_geoip2
+			
 
 echo "2) Configure"
 cd $BUILD_DIR/nginx-src
@@ -85,6 +90,9 @@ cd $BUILD_DIR/nginx-src
     --add-module=$BUILD_DIR/mod_zip \
     --add-module=$BUILD_DIR/mod_headers \
     --add-module=$BUILD_DIR/mod_filter \
+    --add-module=$BUILD_DIR/ngx_brotli \
+    --add-module=$BUILD_DIR/ngx_geoip2 \
+    --add-module=$BUILD_DIR/ngx_cache \
     --with-cc-opt='-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -m64 -mtune=generic'
 
 echo "3) Compile"
