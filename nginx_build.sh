@@ -102,7 +102,7 @@ cd $BUILD_DIR/nginx-src
      --with-zlib=$BUILD_DIR/zlib-1.2.11 \
      --with-openssl=$BUILD_DIR/openssl-1.1.1i \
      --with-openssl-opt=no-nextprotoneg \
-     --with-debug
+     --with-debug \
      --add-module=$BUILD_DIR/nginx-push-stream-module \
      --add-module=$BUILD_DIR/mod_zip \
      --add-module=$BUILD_DIR/headers-more-nginx-module \
