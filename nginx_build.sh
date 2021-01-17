@@ -5,7 +5,7 @@
 sudo wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/php.list
 apt update
-apt install -y perl libmaxminddb-dev libgd-dev libxlt-dev libslt-dev
+apt install -y perl libmaxminddb-dev libgd-dev libxlt-dev libslt2-dev libperl-dev;
 export BUILD_DIR=/tmp/nginx-build
 # Script
 echo "=== Custom NGINX ==="
