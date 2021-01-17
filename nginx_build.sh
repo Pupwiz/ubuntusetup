@@ -108,7 +108,7 @@ cd $BUILD_DIR/nginx-src
      --add-module=$BUILD_DIR/headers-more-nginx-module \
      --add-module=$BUILD_DIR/ngx_http_substitutions_filter_module \
      --add-dynamic-module=$BUILD_DIR/ngx_brotli \
-     --add-module=$BUILD_DIR/ngx_http_geoip2_module \
+     ##--with-compat --add-dynamic-module=$BUILD_DIR/ngx_http_geoip2_module
      --add-module=$BUILD_DIR/ngx_cache_purge \
      --with-cc-opt='-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -m64 -mtune=generic'
 
@@ -117,7 +117,7 @@ make -j8
 
 echo "4) Install"
 # sudo make install
-cat <<EOF >> /etc/systemd/system/nginx.service
+cat <<EOF >> /lib/systemd/system/nginx.service
 
 [Unit]
 Description=nginx - high performance web server
