@@ -11,33 +11,7 @@ apt install -y python3-pip  python-dev python-lxml libminiupnpc-dev miniupnpc
 apt install -y build-essential libssl-dev python3-dbus python3-augeas python3-apt ntpdate
 apt install -y libxml2-dev libffi-dev libjpeg-dev libpng-dev uuid-dev python-dbus;
 apt install -y perl libperl-dev libgd3 libgd-dev libgeoip1 libgeoip-dev geoip-bin libxml2 libxml2-dev libxslt1.1 libxslt1-dev libmaxminddb
-sudo adduser --system --home /nonexistent --shell /bin/false --no-create-home --disabled-login --disabled-password --gecos "nginx user" --group nginx
-sudo mkdir -p /var/cache/nginx/client_temp /var/cache/nginx/fastcgi_temp /var/cache/nginx/proxy_temp /var/cache/nginx/scgi_temp /var/cache/nginx/uwsgi_temp
-sudo chmod 700 /var/cache/nginx/*
-sudo chown nginx:root /var/cache/nginx/*
-cat <<EOF >> /etc/systemd/system/nginx.service
-[Unit]
-Description=nginx - high performance web server
-Documentation=https://nginx.org/en/docs/
-After=network-online.target remote-fs.target nss-lookup.target
-Wants=network-online.target
-
-[Service]
-Type=forking
-PIDFile=/var/run/nginx.pid
-ExecStartPre=/usr/sbin/nginx -t -c /etc/nginx/nginx.conf
-ExecStart=/usr/sbin/nginx -c /etc/nginx/nginx.conf
-ExecReload=/bin/kill -s HUP $MAINPID
-ExecStop=/bin/kill -s TERM $MAINPID
-
-[Install]
-WantedBy=multi-user.target
-EOF
-sudo mkdir /etc/nginx/{conf.d,snippets,sites-available,sites-enabled,apps}
-
-
 export BUILD_DIR=/tmp/nginx-build
-
 # Script
 echo "=== Custom NGINX ==="
 echo "=> Build folder: $BUILD_DIR"
