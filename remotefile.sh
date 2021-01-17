@@ -25,3 +25,4 @@ systemctl enable cloudcmd.service
 systemctl start cloudcmd.service 
 wget https://raw.githubusercontent.com/Pupwiz/ubuntusetup/main/nginx_build.sh
 chmod +x ./nginx_build
+
