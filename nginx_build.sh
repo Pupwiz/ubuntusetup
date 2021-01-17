@@ -5,12 +5,7 @@
 sudo wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/php.list
 apt update
-apt install -y nginx php7.4 php7.4-common php7.4-cli php7.4-fpm
-apt install -y php7.4-mysql php7.4-gd php7.4-json php7.4-curl php7.4-zip php7.4-xml php7.4-mbstring php7.4-pgsql php7.4-bcmath;
-apt install -y python3-pip  python-dev python-lxml libminiupnpc-dev miniupnpc
-apt install -y build-essential libssl-dev python3-dbus python3-augeas python3-apt ntpdate
-apt install -y libxml2-dev libffi-dev libjpeg-dev libpng-dev uuid-dev python-dbus;
-apt install -y perl libperl-dev libgd3 libgd-dev libgeoip1 libgeoip-dev geoip-bin libxml2 libxml2-dev libxslt1.1 libxslt1-dev libmaxminddb
+apt install -y perl libmaxminddb-dev libgd-dev libxlt-dev libslt-dev
 export BUILD_DIR=/tmp/nginx-build
 # Script
 echo "=== Custom NGINX ==="
@@ -65,7 +60,7 @@ cd $BUILD_DIR/nginx-src
  --user=nginx \
             --group=nginx \
             --build=Debian \
-            --builddir=nginx-1.17.2 \
+            --builddir=nginx-1.19.6 \
             --with-select_module \
             --with-poll_module \
             --with-threads \
@@ -106,19 +101,19 @@ cd $BUILD_DIR/nginx-src
             --with-stream_geoip_module=dynamic \
             --with-stream_ssl_preread_module \
             --with-compat \
-            --with-pcre=../pcre-8.44\
+            --with-pcre=$BUILD_DIR/pcre-8.44\
             --with-pcre-jit \
-            --with-zlib=../zlib-1.2.11 \
-            --with-openssl=../openssl-1.1.1i \
+            --with-zlib=$BUILD_DIR/zlib-1.2.11 \
+            --with-openssl=$BUILD_DIR/openssl-1.1.1i \
             --with-openssl-opt=no-nextprotoneg \
             --with-debug
-            --add-module=../push-stream \
-            --add-module=../mod_zip \
-            --add-module=../mod_headers \
-            --add-module=../mod_filter \
-            --add-dynamic-module=../ngx_brotli \
-            --add-module=../ngx_geoip2 \
-            --add-module=../ngx_cache \
+            --add-module=$BUILD_DIR/push-stream \
+            --add-module=$BUILD_DIR/mod_zip \
+            --add-module=$BUILD_DIR/mod_headers \
+            --add-module=$BUILD_DIR/mod_filter \
+            --add-dynamic-module=$BUILD_DIR/ngx_brotli \
+            --add-module=$BUILD_DIR/ngx_geoip2 \
+            --add-module=$BUILD_DIR/ngx_cache \
             --with-cc-opt='-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -m64 -mtune=generic'
 
 echo "3) Compile"
