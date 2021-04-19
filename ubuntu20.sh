@@ -75,7 +75,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get -y install iptables-persistent
 ##Istalling Nginx and PHP for simple webpage also included mysql plugins
 apt install -y nginx php7.4 php7.4-common php7.4-cli php7.4-fpm  --allow-unauthenticated;
 apt install -y php7.4-mysql php7.4-gd php7.4-json php7.4-curl php7.4-zip php7.4-xml php7.4-mbstring php7.4-pgsql php7.4-bcmath;
-apt install -y mariadb-server ##if you need it
+#apt install -y mariadb-server ##if you need it
 apt install -y python3-pip  python-dev python-lxml libminiupnpc-dev miniupnpc
 apt install -y build-essential libssl-dev python3-dbus python3-augeas python3-apt ntpdate
 apt install -y libxml2-dev libffi-dev libjpeg-dev libpng-dev uuid-dev python-dbus;
@@ -406,7 +406,7 @@ chmod +x /home/media/unpack.sh
 ##verbose grub booting for info its a server??##
 sed -i '/GRUB_TIMEOUT_STYLE=hidden/d' /etc/default/grub;
 sed -i '/splash quiet/d' /etc/default/grub;
-sed -i '/GRUB_TIMEOUT=0/c GRUB_TIMEOUT=3' /etc/default/grub;
+sed -i '/GRUB_TIMEOUT=0/c GRUB_TIMEOUT=2' /etc/default/grub;
 sed -i '$ a GRUB_RECORDFAIL_TIMEOUT=0' /etc/default/grub;
 sudo update-grub
 apt update
