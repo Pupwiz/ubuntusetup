@@ -19,9 +19,9 @@ cd $BUILD_DIR
 wget https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz && tar xzvf pcre-8.44.tar.gz
 wget https://www.zlib.net/zlib-1.2.11.tar.gz && tar xzvf zlib-1.2.11.tar.gz
 echo "=> nginx"
-wget -O nginx.tar.gz https://nginx.org/download/nginx-1.19.6.tar.gz
+wget -O nginx.tar.gz https://nginx.org/download/nginx-1.19.9.tar.gz
 tar -xvf nginx.tar.gz
-mv nginx-1.19.6 nginx-src
+mv nginx-1.19.9 nginx-src
 rm -fv nginx.tar.gz
 
 echo "=> Push Stream module"
@@ -32,9 +32,9 @@ git clone https://github.com/evanmiller/mod_zip.git
 echo "=> Mode HearsMoreNginxModule"
 git clone https://github.com/openresty/headers-more-nginx-module.git
 echo "=> OpenSSL"
-wget https://www.openssl.org/source/openssl-1.1.1i.tar.gz
-tar -xvf openssl-1.1.1i.tar.gz
-rm -fv openssl-1.1.1i.tar.gz
+wget https://www.openssl.org/source/openssl-1.1.1k.tar.gz
+tar -xvf openssl-1.1.1k.tar.gz
+rm -fv openssl-1.1.1k.tar.gz
 git clone https://github.com/google/ngx_brotli.git
 cd ngx_brotli && git submodule update --init && 
 cd $BUILD_DIR
@@ -56,7 +56,7 @@ cd $BUILD_DIR/nginx-src
     --user=nginx \
     --group=nginx \
     --build=Debian \
-    --builddir=nginx-1.19.6 \
+    --builddir=nginx-1.19.9 \
     --with-select_module \
     --with-poll_module \
     --with-threads \
